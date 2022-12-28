@@ -130,60 +130,67 @@ class Snake:
         snake_position.append([snake_position[-1][0],snake_position[-1][1]])    #append(apple_position)하면 안됨. 먹이가 뱀꼬리에 붙어다니는 꼴이 됨 왠지는 모름
         print("뱀의 길이 : ",len(snake_position))
 
+# 규칙을 정의한 클래스 rule 선언
+
+class Rule():
+
+    def __init__(self):
+        print()
+
 # 게임 오버 함수
+    def gameover(self):
+        global running
+        
+    # 뱀이 벽에 닿았을 때, 게임이 종료된다.
 
-def gameover():
-    global running
-    
-# 뱀이 벽에 닿았을 때, 게임이 종료된다.
+        if (snake_position[0][0]>380)or(snake_position[0][1]>380)or(snake_position[0][0]<0) or(snake_position[0][1]<0) :
+    ##        running = False # 이 부분을 나중에는 실행 종료가 되는 것이 아니라 게임 오버된 상태에서 멈췄는 것으로 바꾸는 것이 목표
+            while running:
+                time.sleep(0.5)
+                screen.fill(RED)
+                myText = myFont.render("GAME OVER ",True, BLACK)
+                screen.blit(myText, (90,100)) #(글자변수, 위치)
+                myText = myFont.render("SCORE : "+str(len(snake_position)),True, BLACK)
+                screen.blit(myText, (90,150)) #(글자변수, 위치)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
+                        running = False
+                pygame.display.update()
+    # 뱀의 머리가 뱀의 몸통에 부딪히는 경우 게임 오버
 
-    if (snake_position[0][0]>380)or(snake_position[0][1]>380)or(snake_position[0][0]<0) or(snake_position[0][1]<0) :
-##        running = False # 이 부분을 나중에는 실행 종료가 되는 것이 아니라 게임 오버된 상태에서 멈췄는 것으로 바꾸는 것이 목표
-        while running:
-            time.sleep(0.5)
-            screen.fill(RED)
-            myText = myFont.render("GAME OVER ",True, BLACK)
-            screen.blit(myText, (90,100)) #(글자변수, 위치)
-            myText = myFont.render("SCORE : "+str(len(snake_position)),True, BLACK)
-            screen.blit(myText, (90,150)) #(글자변수, 위치)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
-                     running = False
-            pygame.display.update()
-# 뱀의 머리가 뱀의 몸통에 부딪히는 경우 게임 오버
+        if snake_position[0] in snake_position[1:] :
+    ##        running = False
+            while running:
+                time.sleep(0.5)
+                screen.fill(RED)
+                myText = myFont.render("GAME OVER ",True, BLACK)
+                screen.blit(myText, (90,100)) #(글자변수, 위치)
+                myText = myFont.render("SCORE : "+str(len(snake_position)),True, BLACK)
+                screen.blit(myText, (90,150)) #(글자변수, 위치)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
+                        running = False
+                pygame.display.update()
 
-    if snake_position[0] in snake_position[1:] :
-##        running = False
-        while running:
-            time.sleep(0.5)
-            screen.fill(RED)
-            myText = myFont.render("GAME OVER ",True, BLACK)
-            screen.blit(myText, (90,100)) #(글자변수, 위치)
-            myText = myFont.render("SCORE : "+str(len(snake_position)),True, BLACK)
-            screen.blit(myText, (90,150)) #(글자변수, 위치)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
-                     running = False
-            pygame.display.update()
+    # 게임 승리
 
-# 게임 승리
-
-def victory():
-    global running
-    if (len(snake_position)>=400):
-        while running:
-            screen.fill(GREEN)
-            myText = myFont.render("WIN",True, BLACK)
-            screen.blit(myText, (150,100)) #(글자변수, 위치)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
-                     running = False
-            pygame.display.update()
+    def victory(self):
+        global running
+        if (len(snake_position)>=400):
+            while running:
+                screen.fill(GREEN)
+                myText = myFont.render("WIN",True, BLACK)
+                screen.blit(myText, (150,100)) #(글자변수, 위치)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
+                        running = False
+                pygame.display.update()
 
 def rungame():
     global running,event,last_moved,direction,myFont
     snake = Snake()
     apple = Apple(apple_position)
+    rule = Rule()
     while running:
         fps.tick(60) #초당 10프레임?로 재
         screen.fill(WHITE)
@@ -206,12 +213,15 @@ def rungame():
             apple.random(apple_position)
 # 게임 승리
      
-        victory()
+        rule.victory()
 
 # 게임 오버
-        gameover()
+        rule.gameover()
         # This MUST happen after all the other drawing commands.
         pygame.display.flip()   #update 와 비슷하지만 flip은 전체 surface를 업데이트, update는 특정 부분 가능
 
-#rungame()
-#pygame.quit()
+rungame()
+pygame.quit()
+
+if __name__ == '__main__':
+    print("snake_game 파이썬 파일입니다.")
