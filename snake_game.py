@@ -30,7 +30,6 @@ fps = pygame.time.Clock() # 프레임
 snake_position=[[200,20],[180,20],[160,20],[140,20]]
 
 # 먹이의 좌표값
-# first =[120,120]
 apple_position=[120,120]
 
 # 뱀이 자동으로 움직이게 하기위한 시간 계산
@@ -214,5 +213,5 @@ def rungame():
         # This MUST happen after all the other drawing commands.
         pygame.display.flip()   #update 와 비슷하지만 flip은 전체 surface를 업데이트, update는 특정 부분 가능
 
-rungame()
-pygame.quit()
+#rungame()
+#pygame.quit()
