@@ -1,4 +1,5 @@
 import snake_game
+import pygame
 from datetime import datetime
 
 print(snake_game.snake_position)
