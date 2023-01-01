@@ -39,28 +39,25 @@ apple_position=[120,120]
 # 뱀이 자동으로 움직이게 하기위한 시간 계산
 last_moved = datetime.now()
 direction = ''
-def bot_moving(dir):
+udlr=['U','D','L','R']
+def bot_moving(dir,position):
     # snake = Snake()
     global last_moved,direction
     Snake.follow_head('',snake_position)
-    if dir =='Up':
-        snake_position[0][1] -= 20         # 블록의 y 좌표를 20 뺀다
+    if dir =='U':
+        position[1] -= 20         # 블록의 y 좌표를 20 뺀다
         last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
         direction = 'U'                    # 방향 저장하는 변수에 상하좌우을 저장
-    elif dir =='Down' :
-        snake_position[0][1] += 20         # 블록의 y 좌표를 20 더한다
+    elif dir =='D' :
+        position[1] += 20         # 블록의 y 좌표를 20 더한다
         last_moved = datetime.now()         # 방향키를 입력한 시간을 기록
         direction = 'D'                    # 방향 저장하는 변수에 상하좌우을 저장
-    elif dir =='Down' :
-        snake_position[0][1] += 20         # 블록의 y 좌표를 20 더한다
-        last_moved = datetime.now()         # 방향키를 입력한 시간을 기록
-        direction = 'D'                    # 방향 저장하는 변수에 상하좌우을 저장
-    elif dir == 'Left' :
-        snake_position[0][0] -= 20         # 블록의 x 좌표를 20 뺀다
+    elif dir == 'L' :
+        position[0] -= 20         # 블록의 x 좌표를 20 뺀다
         last_moved = datetime.now()         # 방향키를 입력한 시간을 기록
         direction = 'L'                    # 방향 저장하는 변수에 상하좌우을 저장
-    elif dir == 'Right' :
-        snake_position[0][0] += 20         # 블록의 x 좌표를 20 더한다
+    elif dir == 'R' :
+        position[0] += 20         # 블록의 x 좌표를 20 더한다
         last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
         direction = 'R'                    # 방향 저장하는 변수에 상하좌우을 저장
 
@@ -69,25 +66,32 @@ def navigating():
     time.sleep(0.1)
     if (apple_position[1]-snake_position[0][1])<0:
         if not direction =='D':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
-            
-            bot_moving('Up')
+            # bot_moving(udlr[0],snake_position[0])
+            path_test(0)
     elif (apple_position[1]-snake_position[0][1])>0:
         if not direction =='U':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
-            bot_moving('Down')
+            # bot_moving(udlr[1],snake_position[0])
+            path_test(1)
     elif (apple_position[0]-snake_position[0][0])<0:
         if direction == '':
             print("다른 방향키를 눌러 주세요!")
         elif not direction =='R':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
-            bot_moving('Left')
+            # bot_moving(udlr[2],snake_position[0])
+            path_test(2)
     elif (apple_position[0]-snake_position[0][0])>0:
         if not direction =='L':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
-            bot_moving('Right')
-future = []
-def path_test():
-    global future
-    future = snake_position
-    if future[0] in future[1:]:
-        bot_moving()
+            # bot_moving(udlr[3],snake_position[0])
+            path_test(3)
+def path_test(num):
+    i=0
+    while i<4:
+        if (snake_position[0] in snake_position[1:])or(snake_position[0][0]>380)or(snake_position[0][1]>380)or(snake_position[0][0]<0) or(snake_position[0][1]<0) :
+            bot_moving(udlr[i],snake_position[0])
+            print("방향 변경")
+        else:
+            bot_moving(udlr[num],snake_position[0])
+            break
+        i+=1
 
     
 
@@ -192,18 +196,18 @@ class Snake:
         time.sleep(0.1)
         if (apple_position[1]-snake_position[0][1])<0:
             if not direction =='D':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
-                bot_moving('Up')
+                bot_moving(udlr[0],snake_position[0])
         elif (apple_position[1]-snake_position[0][1])>0:
             if not direction =='U':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
-                bot_moving('Down')
+                bot_moving(udlr[1],snake_position[0])
         elif (apple_position[0]-snake_position[0][0])<0:
             if direction == '':
                 print("다른 방향키를 눌러 주세요!")
             elif not direction =='R':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
-                bot_moving('Left')
+                bot_moving(udlr[2],snake_position[0])
         elif (apple_position[0]-snake_position[0][0])>0:
             if not direction =='L':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
-                bot_moving('Right')
+                bot_moving(udlr[3],snake_position[0])
                 
 # 규칙을 정의한 클래스 rule 선언
 
