@@ -36,6 +36,39 @@ apple_position=[120,120]
 last_moved = datetime.now()
 direction = ''
 
+def move_direction(dir):
+    global last_moved,direction
+    snake=Snake()
+    if dir =='U':
+        if not direction =='D':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+            snake.follow_head(snake_position)
+            snake_position[0][1] -= 20         # 블록의 y 좌표를 20 뺀다
+            last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
+            direction = 'U'                    # 방향 저장하는 변수에 상하좌우을 저장
+    
+    if dir =='D':
+        if not direction =='U':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+            snake.follow_head(snake_position)
+            snake_position[0][1] += 20         # 블록의 y 좌표를 20 더한다
+            last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
+            direction = 'D'                    # 방향 저장하는 변수에 상하좌우을 저장
+
+    if dir =='L':
+        if direction == '':
+            print("다른 방향키를 눌러 주세요!")
+        elif not direction =='R':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+            snake.follow_head(snake_position)
+            snake_position[0][0] -= 20         # 블록의 x 좌표를 20 뺀다
+            last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
+            direction = 'L'                    # 방향 저장하는 변수에 상하좌우을 저장
+    
+    if dir =='R':
+        if not direction =='L':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+            snake.follow_head(snake_position)
+            snake_position[0][0] += 20         # 블록의 x 좌표를 20 더한다
+            last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
+            direction = 'R'                    # 방향 저장하는 변수에 상하좌우을 저장
+
 # 먹이 클래스 
 # 먹이 생성 함수
 
@@ -81,31 +114,16 @@ class Snake:
         global last_moved,direction
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                if not direction =='D':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
-                    self.follow_head(snake_position)
-                    snake_position[0][1] -= 20         # 블록의 y 좌표를 20 뺀다
-                    last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
-                    direction = 'U'                    # 방향 저장하는 변수에 상하좌우을 저장
+                move_direction('U')
+
             elif event.key == pygame.K_DOWN:
-                if not direction =='U':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
-                    self.follow_head(snake_position)
-                    snake_position[0][1] += 20         # 블록의 y 좌표를 20 더한다
-                    last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
-                    direction = 'D'                    # 방향 저장하는 변수에 상하좌우을 저장
+                move_direction('D')
+
             elif event.key == pygame.K_LEFT:
-                if direction == '':
-                    print("다른 방향키를 눌러 주세요!")
-                elif not direction =='R':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
-                    self.follow_head(snake_position)
-                    snake_position[0][0] -= 20         # 블록의 x 좌표를 20 뺀다
-                    last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
-                    direction = 'L'                    # 방향 저장하는 변수에 상하좌우을 저장
+                move_direction('L')
+
             elif event.key == pygame.K_RIGHT:
-                if not direction =='L':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
-                    self.follow_head(snake_position)
-                    snake_position[0][0] += 20         # 블록의 x 좌표를 20 더한다
-                    last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
-                    direction = 'R'                    # 방향 저장하는 변수에 상하좌우을 저장
+                move_direction('R')
 
     # 게임이 시작하고 뱀이 마지막으로 이동한 방향으로 쭉 이동하는 것
     
