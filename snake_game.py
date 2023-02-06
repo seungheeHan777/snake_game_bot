@@ -35,39 +35,40 @@ apple_position=[120,120]
 # 뱀이 자동으로 움직이게 하기위한 시간 계산
 last_moved = datetime.now()
 direction = ''
+udlr=['U','D','L','R']
 
 def move_direction(dir):
     global last_moved,direction
     snake=Snake()
-    if dir =='U':
-        if not direction =='D':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+    if dir ==udlr[0]:
+        if not direction ==udlr[1]:                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
             snake.follow_head(snake_position)
             snake_position[0][1] -= 20         # 블록의 y 좌표를 20 뺀다
             last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
-            direction = 'U'                    # 방향 저장하는 변수에 상하좌우을 저장
+            direction = udlr[0]                    # 방향 저장하는 변수에 상하좌우을 저장
     
-    if dir =='D':
-        if not direction =='U':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+    if dir ==udlr[1]:
+        if not direction ==udlr[0]:                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
             snake.follow_head(snake_position)
             snake_position[0][1] += 20         # 블록의 y 좌표를 20 더한다
             last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
-            direction = 'D'                    # 방향 저장하는 변수에 상하좌우을 저장
+            direction = udlr[1]                    # 방향 저장하는 변수에 상하좌우을 저장
 
-    if dir =='L':
+    if dir ==udlr[2]:
         if direction == '':
             print("다른 방향키를 눌러 주세요!")
-        elif not direction =='R':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+        elif not direction ==udlr[3]:                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
             snake.follow_head(snake_position)
             snake_position[0][0] -= 20         # 블록의 x 좌표를 20 뺀다
             last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
-            direction = 'L'                    # 방향 저장하는 변수에 상하좌우을 저장
+            direction = udlr[2]                    # 방향 저장하는 변수에 상하좌우을 저장
     
-    if dir =='R':
-        if not direction =='L':                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
+    if dir ==udlr[3]:
+        if not direction ==udlr[2]:                # 최근에 이동한 방향과 반대 방향으로는 이동할 수 없다
             snake.follow_head(snake_position)
             snake_position[0][0] += 20         # 블록의 x 좌표를 20 더한다
             last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
-            direction = 'R'                    # 방향 저장하는 변수에 상하좌우을 저장
+            direction = udlr[3]                    # 방향 저장하는 변수에 상하좌우을 저장
 
 # 먹이 클래스 
 # 먹이 생성 함수
@@ -95,7 +96,6 @@ class Snake:
         print()
         
     # 스네이크 생성 함수
-
     def make_snake(self,position):
         pygame.draw.rect(screen, BLACK,[position[0],position[1],20,20],0)
 
@@ -114,32 +114,32 @@ class Snake:
         global last_moved,direction
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                move_direction('U')
+                move_direction(udlr[0])
 
             elif event.key == pygame.K_DOWN:
-                move_direction('D')
+                move_direction(udlr[1])
 
             elif event.key == pygame.K_LEFT:
-                move_direction('L')
+                move_direction(udlr[2])
 
             elif event.key == pygame.K_RIGHT:
-                move_direction('R')
+                move_direction(udlr[3])
 
     # 게임이 시작하고 뱀이 마지막으로 이동한 방향으로 쭉 이동하는 것
     
     def auto_moving(self):
         global last_moved,direction
         if timedelta(seconds=0.1) <= datetime.now() - last_moved:
-            if direction == 'U':
+            if direction == udlr[0]:
                 self.follow_head(snake_position)
                 snake_position[0][1] -= 20         # 블록의 y 좌표를 20 뺀다      
-            elif direction == 'D':
+            elif direction == udlr[1]:
                 self.follow_head(snake_position)
                 snake_position[0][1] += 20         # 블록의 y 좌표를 20 더한다
-            elif direction == 'L':
+            elif direction == udlr[2]:
                 self.follow_head(snake_position)
                 snake_position[0][0] -= 20         # 블록의 x 좌표를 20 뺀다
-            elif  direction== 'R':
+            elif  direction== udlr[3]:
                 self.follow_head(snake_position)
                 snake_position[0][0] += 20         # 블록의 x 좌표를 20 더한다
             last_moved = datetime.now()
@@ -155,6 +155,19 @@ class Rule():
     def __init__(self):
         print()
 
+    def gameover_code(self):
+        global running
+        while running:
+            time.sleep(0.5)
+            screen.fill(RED)
+            myText = myFont.render("GAME OVER ",True, BLACK)
+            screen.blit(myText, (90,100)) #(글자변수, 위치)
+            myText = myFont.render("SCORE : "+str(len(snake_position)),True, BLACK)
+            screen.blit(myText, (90,150)) #(글자변수, 위치)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
+                    running = False
+            pygame.display.update()
 # 게임 오버 함수
     def gameover(self):
         global running
@@ -163,35 +176,14 @@ class Rule():
 
         if (snake_position[0][0]>380)or(snake_position[0][1]>380)or(snake_position[0][0]<0) or(snake_position[0][1]<0) :
     ##        running = False # 이 부분을 나중에는 실행 종료가 되는 것이 아니라 게임 오버된 상태에서 멈췄는 것으로 바꾸는 것이 목표
-            while running:
-                time.sleep(0.5)
-                screen.fill(RED)
-                myText = myFont.render("GAME OVER ",True, BLACK)
-                screen.blit(myText, (90,100)) #(글자변수, 위치)
-                myText = myFont.render("SCORE : "+str(len(snake_position)),True, BLACK)
-                screen.blit(myText, (90,150)) #(글자변수, 위치)
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
-                        running = False
-                pygame.display.update()
+            self.gameover_code()
     # 뱀의 머리가 뱀의 몸통에 부딪히는 경우 게임 오버
 
         if snake_position[0] in snake_position[1:] :
     ##        running = False
-            while running:
-                time.sleep(0.5)
-                screen.fill(RED)
-                myText = myFont.render("GAME OVER ",True, BLACK)
-                screen.blit(myText, (90,100)) #(글자변수, 위치)
-                myText = myFont.render("SCORE : "+str(len(snake_position)),True, BLACK)
-                screen.blit(myText, (90,150)) #(글자변수, 위치)
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
-                        running = False
-                pygame.display.update()
+            self.gameover_code()
 
     # 게임 승리
-
     def victory(self):
         global running
         if (len(snake_position)>=400):
