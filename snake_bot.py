@@ -1,8 +1,10 @@
 import pygame
 from datetime import datetime
 from datetime import timedelta
-from random import randrange,random
+from random import randrange
+import random
 import time
+import copy
 # Define the colors we will use in RGB format
 BLACK = (  0,   0,   0)
 WHITE = (255, 255, 255)
@@ -60,11 +62,12 @@ def move_direction(dir):
                 snake_position[0][0]+=dx[i]
                 snake_position[0][1]+=dy[i]
                 last_moved = datetime.now()        # 방향키를 입력한 시간을 기록
+                direction = ulrd[i]                    # 방향 저장하는 변수에 상하좌우을 저장
 
 def navigating():
     global last_moved,direction,path_direction,path_position
-    snake=Snake()
     time.sleep(0.1)
+    snake=Snake()
     # x,y 좌표 찾기
     x_moving=apple_position[0]-snake_position[0][0]
     y_moving=apple_position[1]-snake_position[0][1]
@@ -78,18 +81,23 @@ def navigating():
     elif y_moving<0:
         path_direction=ulrd[0]  #U
 
-    path_position=snake_position
+    # # 리스트 복사가 아닌 리스트 주소 값을 복사한것, 따라서 같은 주소 공유
+    # path_position=snake_position
+    # 이 방법은 얕은 복사(shallow copy)로 요소가 변형객체면 변형 객체의 특성을 그대로 가져온다.
+    # 따라서 이 방법도 path와 snake가 요소가 같이 변경된다.
+    # 이를 해결하기위해 import copy로 copy 모듈에서 deepcopy를 호출해서 사용한다.
+    path_position=copy.deepcopy(snake_position)
     # 예측 경로
     for i in range(len(ulrd)):
         if path_direction==ulrd[i]:
-            snake.follow_head(path_position)
+            for j in range(len(path_position),1,-1):
+                path_position[j-1][0]=path_position[j-2][0]
+                path_position[j-1][1]=path_position[j-2][1]
             path_position[0][0]+=dx[i]
             path_position[0][1]+=dy[i]
-        if path_position[0]==path_position[1:]:
+        if path_position[0] in path_position[1:]:
             path_direction=ulrd[random.sample([3-(i+2),i+2],1)]
     move_direction(path_direction)
-
-
 
 # 먹이 클래스 
 # 먹이 생성 함수
@@ -163,10 +171,8 @@ class Snake:
 # 규칙을 정의한 클래스 rule 선언
 
 class Rule():
-
     def __init__(self):
         print()
-
 # 게임 오버 함수
     def gameover(self):
         global running
@@ -201,7 +207,6 @@ class Rule():
                 pygame.display.update()
 
     # 게임 승리
-
     def victory(self):
         global running
         if (len(snake_position)>=400):
@@ -213,7 +218,6 @@ class Rule():
                     if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
                         running = False
                 pygame.display.update()
-
 
 def rungame():
     global running,event,last_moved,direction,myFont
@@ -231,18 +235,14 @@ def rungame():
             snake.move_block()    #블럭을 움직이는 함수
             if event.type == pygame.QUIT: #창을 닫는 이벤트 발생했는가?
                 running = False
-
 # 게임이 시작하고 뱀이 마지막으로 이동한 방향으로 쭉 이동한다.
         snake.auto_moving()
-
 # 뱀이 먹이를 먹은 경우 다음 먹이의 좌표가 랜덤으로 생성된다.
-
         if snake_position[0] == apple_position:
             snake.add()
             apple.random(apple_position)
 # 게임 승리
         rule.victory()
-
 # 게임 오버
         rule.gameover()
         # This MUST happen after all the other drawing commands.
@@ -250,6 +250,5 @@ def rungame():
 
 rungame()
 pygame.quit()
-
 if __name__ == '__main__':
     print("snake_bot 파이썬 파일입니다.")
