@@ -96,7 +96,16 @@ def navigating():
             path_position[0][0]+=dx[i]
             path_position[0][1]+=dy[i]
         if path_position[0] in path_position[1:]:
-            path_direction=ulrd[random.sample([3-(i+2),i+2],1)]
+            re_direction=random.sample([3-(i+2),i+2],1)
+            if re_direction[0]%4==0:
+                re_direction[0]=0
+            elif re_direction[0]%4==1:
+                re_direction[0]=1
+            elif re_direction[0]%4==2:
+                re_direction[0]=2
+            elif re_direction[0]%4==3:
+                re_direction[0]=3
+            path_direction=ulrd[re_direction[0]]
     move_direction(path_direction)
 
 # 먹이 클래스 
