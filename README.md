@@ -1,6 +1,6 @@
 # snake_game_bot
 
-Python pygame으로 만든 스네이크 게임과 자동 플레이 봇 프로젝트입니다.
+Python `pygame`으로 만든 스네이크 게임과 자동 플레이 봇 프로젝트입니다.
 
 ## 실행 방법
 
@@ -8,27 +8,21 @@ Python pygame으로 만든 스네이크 게임과 자동 플레이 봇 프로젝
 
 ```powershell
 python snake_game.py
-python snake_bot.py
 ```
 
-## 개발 환경
+## 현재 구조
 
-- Python
-- pygame
-- VS Code
-- venv
-
-## 현재 파일
-
-- `snake_game.py`: 키보드로 조작하는 기본 스네이크 게임
-- `snake_bot.py`: 자동으로 먹이를 찾아가도록 실험 중인 봇 버전
-- `fun_navigator(ver1.0).txt`: 예전 자동 이동 로직 메모
-- `AGENTS.md`: Codex 작업 지침
-- `PROJECT_PLAN.md`: 개발 계획
+- `snake_game.py`: 수동 플레이 게임 실행 흐름
+- `snake.py`: `Snake` 클래스, 뱀 위치/이동/성장/그리기
+- `apple.py`: `Apple` 클래스, 먹이 위치/재생성/그리기
+- `rule.py`: `Rule` 클래스, 게임 오버/승리 조건/종료 화면
+- `snake_core.py`: 보드 크기, 방향, 좌표 이동, 충돌 검사, 먹이 생성 helper
+- `snake_bot.py`: 경로 탐색 봇으로 개선 예정
+- `snake_ga_bot.py`: 유전 알고리즘 봇으로 추가 예정
 
 ## 목표
 
-1. `snake_game.py`의 중복 코드를 줄이고 구조를 정리합니다.
-2. 공통 게임 규칙을 `snake_core.py`로 분리합니다.
-3. `snake_bot.py`를 경로 탐색 기반 봇으로 개선합니다.
-4. `snake_ga_bot.py`에 유전 알고리즘 기반 봇을 새로 만듭니다.
+1. 수동 스네이크 게임 코드를 읽기 쉬운 파일 구조로 정리합니다.
+2. `snake_game.py`는 실행 흐름만 담당하게 만듭니다.
+3. 경로 탐색 기반 봇을 만듭니다.
+4. 유전 알고리즘 기반 봇을 만듭니다.

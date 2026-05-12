@@ -1,52 +1,38 @@
 # Project Plan
 
-## Goal
+## 목표
 
-pygame으로 만든 스네이크 게임을 정리하고, 같은 게임 규칙 위에서 두 종류의 자동 플레이 봇을 만듭니다.
+수동 스네이크 게임을 먼저 명확한 파일 구조로 정리하고, 같은 규칙 위에서 두 종류의 봇을 만듭니다.
 
-## Target Structure
+## 목표 구조
 
 ```text
-snake_core.py   # 공통 게임 규칙
-snake_game.py   # 사람이 플레이하는 실행 파일
+snake_game.py   # 수동 플레이 실행 흐름
+snake.py        # Snake 클래스
+apple.py        # Apple 클래스
+rule.py         # Rule 클래스
+snake_core.py   # 공통 상수와 순수 helper 함수
 snake_bot.py    # 경로 탐색 봇
 snake_ga_bot.py # 유전 알고리즘 봇
 ```
 
-## First Priority
+## 책임 분리
 
-가장 먼저 `snake_game.py`를 개선합니다.
+- `snake_game.py`: pygame 초기화, 객체 생성, 이벤트 루프, 화면 업데이트
+- `snake.py`: 뱀의 위치, 이동, 성장, 그리기
+- `apple.py`: 먹이의 위치, 재생성, 그리기
+- `rule.py`: 게임 오버 조건, 승리 조건, 종료 화면
+- `snake_core.py`: 보드 크기, 방향, 좌표 이동, 충돌 검사, 먹이 생성
 
-`snake_core.py`로 먼저 분리할 항목:
+## 봇 계획
 
-- 방향 상수
-- 좌표 이동 함수
-- 뱀 이동 함수
-- 벽 충돌 검사
-- 자기 몸 충돌 검사
-- 먹이 생성 함수
+1. `snake_bot.py`: BFS 기반 경로 탐색 봇
+   - 현재 몸을 장애물로 보기
+   - 꼬리 이동 반영
+   - 먹은 뒤 갇히지 않는 장기 생존 전략
 
-## Pathfinding Bot
-
-`snake_bot.py`는 경로 탐색 봇으로 만듭니다.
-
-단계:
-
-1. 기본 BFS: 현재 몸을 장애물로 보고 먹이까지 최단 경로를 찾습니다.
-2. 꼬리 이동 반영: 이동 시 꼬리가 빠지는 상황을 고려합니다.
-3. 장기 생존 전략: 먹이를 먹은 뒤 갇히지 않는지 확인합니다.
-
-## Genetic Algorithm Bot
-
-유전 알고리즘 봇은 새 파일 `snake_ga_bot.py`에 만듭니다.
-
-이 단계는 경로 탐색 봇과 공통 게임 로직이 안정된 뒤 진행합니다.
-
-## Working Style
-
-작게 단계별로 진행합니다.
-
-- 큰 구조 변경 전에는 먼저 질문합니다.
-- 실행되는 상태를 최대한 유지합니다.
-- 방향이 바뀌면 `AGENTS.md`, `TODO.md`, `NOTES.md`를 갱신합니다.
-
+2. `snake_ga_bot.py`: 유전 알고리즘 기반 봇
+   - 개체 표현 방식
+   - 점수 함수
+   - 선택, 교차, 변이
+   - 학습 결과 저장 방식
