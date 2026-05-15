@@ -13,7 +13,8 @@ apple.py        # Apple 클래스
 rule.py         # Rule 클래스
 snake_core.py   # 공통 상수와 순수 helper 함수
 snake_bot.py    # 경로 탐색 봇
-snake_ga_bot.py # 유전 알고리즘 봇
+snake_ga_bot.py # 유전 알고리즘 봇 실행 진입점
+ga_bot/         # 유전 알고리즘 봇 코드와 학습 산출물
 ```
 
 ## 책임 분리
@@ -32,7 +33,8 @@ snake_ga_bot.py # 유전 알고리즘 봇
    - 먹은 뒤 갇히지 않는 장기 생존 전략
 
 2. `snake_ga_bot.py`: 유전 알고리즘 기반 봇
-   - 개체 표현 방식
-   - 점수 함수
-   - 선택, 교차, 변이
-   - 학습 결과 저장 방식
+   - `ga_bot/policy.py`: 개체의 가중치로 방향을 평가합니다.
+   - `ga_bot/simulation.py`: pygame 없이 학습용 게임을 실행합니다.
+   - `ga_bot/trainer.py`: 세대 평가, 선택, 교차, 변이를 실행합니다.
+   - `ga_bot/storage.py`: `best_weights.json`, `checkpoint.json`, `training_history.csv`를 관리합니다.
+   - 가중치 특징값은 사용자와 논의한 뒤 확정합니다.

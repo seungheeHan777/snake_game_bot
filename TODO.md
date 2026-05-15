@@ -20,14 +20,17 @@
 
 ## 3단계: 유전 알고리즘 봇
 
-- [ ] `snake_ga_bot.py` 생성
-- [ ] 개체 표현 방식 결정
-- [ ] 점수 함수 설계
-- [ ] 선택, 교차, 변이 방식 구현
-- [ ] 학습 결과 저장 방식 결정
+- [x] `ga_bot/` 폴더 생성
+- [x] `snake_ga_bot.py` 생성
+- [x] GA 코드 구조 분리
+- [ ] 가중치 특징값 설계 확정
+- [ ] 학습 실행 확인
+- [ ] 학습된 모델을 게임에 연결
+- [ ] 세부 작업은 `ga_bot/TODO.md`에서 관리
 
 ## 문서
 
 - [x] `AGENTS.md` 작성
 - [x] `PROJECT_PLAN.md` 작성
 - [x] README 구조 설명 최신화
+- [x] `ga_bot/AGENTS.md`, `ga_bot/TODO.md`, `ga_bot/README.md` 작성

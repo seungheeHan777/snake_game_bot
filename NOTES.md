@@ -21,3 +21,11 @@
 
 - 리팩터링 단계에서는 `snake_game.py`가 읽기 쉬운 실행 파일이 되는 것을 우선합니다.
 - 봇 구현은 수동 게임 구조가 안정된 뒤 진행합니다.
+
+## 2026-05-14
+
+- 유전 알고리즘 관련 코드를 `ga_bot/` 폴더에서 관리하기로 했습니다.
+- `snake_ga_bot.py`는 GA 학습 실행 진입점으로 사용합니다.
+- `policy.py`, `simulation.py`, `trainer.py`, `storage.py`로 역할을 분리했습니다.
+- GA 내부 세부 TODO는 `ga_bot/TODO.md`에서 관리하고, 루트 `TODO.md`에는 큰 단계만 기록합니다.
+- 학습 결과는 `ga_bot/models/`, 학습 로그는 `ga_bot/logs/`에 저장합니다.

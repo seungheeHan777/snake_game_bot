@@ -15,7 +15,8 @@ apple.py        # Apple 클래스
 rule.py         # Rule 클래스
 snake_core.py   # 공통 상수와 순수 helper 함수
 snake_bot.py    # 경로 탐색 봇
-snake_ga_bot.py # 유전 알고리즘 봇
+snake_ga_bot.py # 유전 알고리즘 봇 실행 진입점
+ga_bot/         # 유전 알고리즘 봇 코드와 학습 산출물
 ```
 
 ## 책임 분리 규칙
@@ -46,6 +47,17 @@ snake_ga_bot.py # 유전 알고리즘 봇
 3. 장기 생존 전략: 먹이를 먹은 뒤 갇히지 않는지 확인합니다.
 
 유전 알고리즘 봇은 나중에 `snake_ga_bot.py`에서 만듭니다.
+
+유전 알고리즘 봇의 세부 코드는 `ga_bot/` 폴더에서 관리합니다.
+
+- `ga_bot/policy.py`: 학습된 가중치로 방향을 선택합니다.
+- `ga_bot/simulation.py`: pygame 없이 한 판을 계산으로 실행합니다.
+- `ga_bot/trainer.py`: 선택, 교차, 변이, 세대 반복을 담당합니다.
+- `ga_bot/storage.py`: JSON 모델과 CSV 로그 저장을 담당합니다.
+- `ga_bot/TODO.md`: GA 내부 세부 작업을 관리합니다.
+- `ga_bot/AGENTS.md`: GA 폴더 전용 작업 규칙입니다.
+
+가중치 특징값은 사용자와 논의한 뒤 확정합니다.
 
 ## Git 작업 규칙
 
