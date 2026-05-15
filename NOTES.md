@@ -29,3 +29,10 @@
 - `policy.py`, `simulation.py`, `trainer.py`, `storage.py`로 역할을 분리했습니다.
 - GA 내부 세부 TODO는 `ga_bot/TODO.md`에서 관리하고, 루트 `TODO.md`에는 큰 단계만 기록합니다.
 - 학습 결과는 `ga_bot/models/`, 학습 로그는 `ga_bot/logs/`에 저장합니다.
+
+## 2026-05-16
+
+- GA 봇이 100점 근처에서 정체되는 원인을 현재 feature의 한계로 분석했습니다.
+- `food_distance_delta` 중심의 한 칸 평가만으로는 후반 생존에 필요한 공간 판단이 부족하다고 정리했습니다.
+- 다음 개선 후보로 `free_space_after_move`, `tail_reachable_after_move`, loop penalty를 기록했습니다.
+- 자세한 내용은 `ga_bot/DESIGN_NOTES.md`에 정리했습니다.

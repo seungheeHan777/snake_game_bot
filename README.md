@@ -38,3 +38,5 @@ GA 관련 세부 코드는 `ga_bot/` 폴더에서 관리합니다.
 - `ga_bot/storage.py`: JSON 모델과 CSV 로그를 저장하고 불러옵니다.
 
 학습 결과는 `ga_bot/models/`, 학습 로그는 `ga_bot/logs/`에 저장합니다.
+
+GA 봇의 feature 개선 과정과 문제 교정 기록은 `ga_bot/DESIGN_NOTES.md`에 정리합니다.

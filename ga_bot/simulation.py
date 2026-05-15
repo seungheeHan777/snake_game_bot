@@ -11,7 +11,8 @@ from snake_core import (
 
 from ga_bot.policy import choose_direction, copy_positions
 
-MAX_STEPS_WITHOUT_FOOD = BOARD_CELLS
+# Give the snake extra room to untangle before starvation cutoff.
+MAX_STEPS_WITHOUT_FOOD = BOARD_CELLS * 10
 
 
 def simulate_game(individual):
@@ -51,4 +52,3 @@ def simulate_game(individual):
     individual.steps = steps
     individual.fitness = score * 1000 + steps
     return individual.fitness
-

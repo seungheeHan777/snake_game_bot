@@ -2,7 +2,12 @@
 
 from random import choices, random, sample, uniform
 
-from ga_bot.policy import FEATURE_NAMES, Individual
+from ga_bot.policy import (
+    FEATURE_NAMES,
+    SAMPLE_WEIGHT_PRESETS,
+    Individual,
+    ensure_weight_size,
+)
 from ga_bot.simulation import simulate_game
 from ga_bot.storage import (
     append_history,
@@ -12,20 +17,28 @@ from ga_bot.storage import (
 )
 
 POPULATION_SIZE = 40
-GENERATIONS = 20
+GENERATIONS = 250
 MUTATION_RATE = 0.12
 MUTATION_AMOUNT = 0.35
 ELITE_COUNT = 4
+INITIAL_NOISE_SCALE = 0.35
 
 
-def create_individual():
-    """랜덤한 가중치를 가진 개체를 만듭니다."""
-    return Individual([uniform(-1, 1) for _ in FEATURE_NAMES])
+def create_individual(preset_name="balanced_v1"):
+    """preset 기반 가중치에 작은 노이즈를 더해 개체를 만듭니다."""
+    base_weights = SAMPLE_WEIGHT_PRESETS.get(
+        preset_name,
+        SAMPLE_WEIGHT_PRESETS["balanced_v1"],
+    )
+    weights = []
+    for base_weight in ensure_weight_size(base_weights):
+        weights.append(base_weight + uniform(-INITIAL_NOISE_SCALE, INITIAL_NOISE_SCALE))
+    return Individual(weights)
 
 
-def create_population():
+def create_population(preset_name="balanced_v1"):
     """초기 세대를 만듭니다."""
-    return [create_individual() for _ in range(POPULATION_SIZE)]
+    return [create_individual(preset_name=preset_name) for _ in range(POPULATION_SIZE)]
 
 
 def evaluate_population(population):
@@ -112,4 +125,3 @@ def train(generations=GENERATIONS, resume=True):
         population = next_generation(population)
 
     return best_individual
-
