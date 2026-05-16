@@ -118,6 +118,12 @@ def tail_reachable_after_move(next_positions):
     ) else 0
 
 
+def reachable_after_move(next_positions):
+    """이동 후 새 머리에서 도달 가능한 좌표를 한 번만 계산합니다."""
+    blocked_positions = {tuple(position) for position in next_positions[1:-1]}
+    return reachable_position_keys(next_positions[0], blocked_positions)
+
+
 def direction_features(snake_positions, current_direction, food_position, direction):
     """방향 하나를 평가하기 위한 특징값을 만듭니다."""
     head = snake_positions[0]
@@ -133,6 +139,30 @@ def direction_features(snake_positions, current_direction, food_position, direct
         1 if direction == current_direction else 0,
         free_space_after_move(next_positions),
         tail_reachable_after_move(next_positions),
+    ]
+
+
+def direction_features_from_move(
+    snake_positions,
+    current_direction,
+    food_position,
+    direction,
+    next_positions,
+    reachable_keys,
+):
+    """이미 계산한 이동 결과와 BFS 결과로 feature를 만듭니다."""
+    head = snake_positions[0]
+    next_head = next_positions[0]
+    before_distance = distance_to_food(head, food_position)
+    after_distance = distance_to_food(next_head, food_position)
+
+    return [
+        (before_distance - after_distance) / CELL_SIZE,
+        1 if is_wall_collision(next_head) else 0,
+        1 if next_head in snake_positions[1:] else 0,
+        1 if direction == current_direction else 0,
+        len(reachable_keys) / BOARD_CELLS,
+        1 if tuple(next_positions[-1]) in reachable_keys else 0,
     ]
 
 
@@ -168,23 +198,23 @@ def choose_direction(individual, snake_positions, current_direction, food_positi
         if not can_change_direction(current_direction, direction):
             continue
 
-        features = direction_features(
+        next_positions = simulate_move(snake_positions, direction)
+        if is_wall_collision(next_positions[0]) or is_self_collision(next_positions):
+            continue
+
+        reachable_keys = reachable_after_move(next_positions)
+        features = direction_features_from_move(
             snake_positions,
             current_direction,
             food_position,
             direction,
+            next_positions,
+            reachable_keys,
         )
-        candidates.append((
-            is_safe_move(snake_positions, direction),
-            weighted_score(normalized_weights, features),
-            direction,
-        ))
+        candidates.append((weighted_score(normalized_weights, features), direction))
 
-    safe_candidates = [candidate for candidate in candidates if candidate[0]]
-    if safe_candidates:
-        candidates = safe_candidates
     if not candidates:
         return None
 
     candidates.sort(reverse=True)
-    return candidates[0][2]
+    return candidates[0][1]

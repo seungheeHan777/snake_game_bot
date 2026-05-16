@@ -20,11 +20,16 @@ def simulate_game(individual):
     snake_positions = copy_positions(INITIAL_SNAKE_POSITIONS)
     current_direction = ""
     food_position = generate_food(snake_positions)
-    score = 0
+    # GA 점수는 먹이 개수가 아니라 현재 뱀 길이(최대 400)로 사용합니다.
+    score = len(snake_positions)
     steps = 0
     steps_without_food = 0
 
-    while food_position is not None and steps_without_food < MAX_STEPS_WITHOUT_FOOD:
+    while (
+        score < BOARD_CELLS
+        and food_position is not None
+        and steps_without_food < MAX_STEPS_WITHOUT_FOOD
+    ):
         direction = choose_direction(
             individual,
             snake_positions,
@@ -43,8 +48,9 @@ def simulate_game(individual):
             break
 
         if snake_positions[0] == food_position:
-            score += 1
-            snake_positions.append(snake_positions[-1].copy())
+            if score < BOARD_CELLS:
+                snake_positions.append(snake_positions[-1].copy())
+            score = min(len(snake_positions), BOARD_CELLS)
             food_position = generate_food(snake_positions)
             steps_without_food = 0
 

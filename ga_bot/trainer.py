@@ -17,7 +17,7 @@ from ga_bot.storage import (
 )
 
 POPULATION_SIZE = 40
-GENERATIONS = 250
+GENERATIONS = 100
 MUTATION_RATE = 0.12
 MUTATION_AMOUNT = 0.35
 ELITE_COUNT = 4
@@ -45,7 +45,12 @@ def evaluate_population(population):
     """세대 전체를 평가합니다."""
     for individual in population:
         simulate_game(individual)
-    population.sort(key=lambda individual: individual.fitness, reverse=True)
+    population.sort(key=individual_rank, reverse=True)
+
+
+def individual_rank(individual):
+    """score를 최우선으로 보고 fitness를 보조 기준으로 사용합니다."""
+    return individual.score, individual.fitness
 
 
 def select_parent(population):
@@ -110,7 +115,10 @@ def train(generations=GENERATIONS, resume=True):
     end_generation = start_generation + generations - 1
     for generation in range(start_generation, end_generation + 1):
         evaluate_population(population)
-        if best_individual is None or population[0].fitness > best_individual.fitness:
+        if (
+            best_individual is None
+            or individual_rank(population[0]) > individual_rank(best_individual)
+        ):
             best_individual = population[0]
             save_best_model(best_individual, generation)
 

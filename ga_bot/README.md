@@ -17,8 +17,20 @@
 python snake_ga_bot.py
 ```
 
-현재 가중치 특징값은 확정 전 초안입니다. 가중치 적용 방식은 사용자와 논의한 뒤 조정합니다.
+학습된 최고 모델을 게임 화면으로 확인:
+
+```powershell
+python snake_ga_play.py
+```
+
+반복 평가(예정):
+
+```powershell
+python ga_bot/evaluate_model.py
+```
 
 ## 설계 기록
 
 GA 봇의 점수 정체 원인, feature 개선 방향, 열린 공간과 꼬리 탈출 개념은 `DESIGN_NOTES.md`에 기록합니다.
+
+DB 저장 설계 초안은 `DB_PLAN.md`에 기록합니다.
