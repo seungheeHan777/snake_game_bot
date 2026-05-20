@@ -1,5 +1,23 @@
 # snake_game_bot
 
+## 실행 파일(핵심)
+
+- 학습 실행: `snake_ga_bot.py`
+- 학습 모델 플레이 확인: `snake_ga_play.py`
+
+## GA 폴더 구조(핵심)
+
+- `ga_bot/trainer.py`: 유전 알고리즘 학습 루프(세대 반복)
+- `ga_bot/simulation.py`: 화면 없는 시뮬레이션 + fitness 계산
+- `ga_bot/policy.py`: feature 계산 + 방향 선택
+- `ga_bot/storage.py`: 모델/체크포인트/로그 저장
+- `ga_bot/models/`: `best_weights.json`, `checkpoint.json`, `score400/` 후보 저장
+- `ga_bot/logs/`: `training_history.csv` 학습 기록
+- `ga_bot/tools/`: 보조 검증/선발 스크립트
+  - `evaluate_model.py`: 모델 1개 반복 평가
+  - `select_best_candidate.py`: score400 후보 자동 선발
+  - `run_pipeline.py`: 평가/선발 파이프라인
+
 Python `pygame`으로 만든 스네이크 게임과 자동 플레이 봇 프로젝트입니다.
 
 ## 실행 방법

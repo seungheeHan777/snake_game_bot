@@ -33,8 +33,14 @@
 - [ ] 학습 파라미터 조정
 - [ ] 무한 루프/빙빙 도는 패턴 페널티 적용
 : 방식은 최근 머리 좌표 반복 빈도 기반 감점
-- [ ] `evaluate_model.py` 작성
+- [x] `ga_bot/tools/evaluate_model.py` 작성
 : 고정된 best 모델 100판 반복 평가, `score=400` 달성률 출력
+
+- [x] `ga_bot/tools/select_best_candidate.py` 작성
+: `models/score400` 후보를 반복 평가해 최종 best 자동 선발
+
+- [x] `ga_bot/tools/run_pipeline.py` 작성
+: 평가/선발 과정을 한 번에 실행 (`--skip-train` 지원)
 
 ## 실행 연결
 

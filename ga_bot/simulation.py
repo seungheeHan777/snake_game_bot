@@ -1,5 +1,7 @@
 """유전 알고리즘 학습용 화면 없는 스네이크 시뮬레이션입니다."""
 
+from collections import deque
+
 from snake_core import (
     BOARD_CELLS,
     INITIAL_SNAKE_POSITIONS,
@@ -13,6 +15,17 @@ from ga_bot.policy import choose_direction, copy_positions
 
 # Give the snake extra room to untangle before starvation cutoff.
 MAX_STEPS_WITHOUT_FOOD = BOARD_CELLS * 10
+LOOP_WINDOW = BOARD_CELLS
+LOOP_PENALTY_SCALE = 0.35
+
+
+def loop_penalty(recent_heads, steps):
+    """최근 머리 좌표 반복 비율 기반 감점값을 계산합니다."""
+    if not recent_heads or steps <= 0:
+        return 0
+    unique_cells = len(set(recent_heads))
+    repeat_ratio = 1.0 - (unique_cells / len(recent_heads))
+    return int(repeat_ratio * LOOP_PENALTY_SCALE * steps)
 
 
 def simulate_game(individual):
@@ -24,6 +37,8 @@ def simulate_game(individual):
     score = len(snake_positions)
     steps = 0
     steps_without_food = 0
+    recent_heads = deque(maxlen=LOOP_WINDOW)
+    recent_heads.append(tuple(snake_positions[0]))
 
     while (
         score < BOARD_CELLS
@@ -43,6 +58,7 @@ def simulate_game(individual):
         current_direction = direction
         steps += 1
         steps_without_food += 1
+        recent_heads.append(tuple(snake_positions[0]))
 
         if is_wall_collision(snake_positions[0]) or is_self_collision(snake_positions):
             break
@@ -56,5 +72,5 @@ def simulate_game(individual):
 
     individual.score = score
     individual.steps = steps
-    individual.fitness = score * 1000 + steps
+    individual.fitness = score * 1000 + steps - loop_penalty(recent_heads, steps)
     return individual.fitness

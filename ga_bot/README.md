@@ -1,5 +1,24 @@
 # GA Bot
 
+## 2026-05-20 정리된 실행 구조
+
+실행 진입점은 아래 2개만 사용합니다.
+
+1. 학습 실행: `snake_ga_bot.py`
+2. 학습된 모델 플레이 확인: `snake_ga_play.py`
+
+보조 실행 스크립트는 `ga_bot/tools/`로 이동했습니다.
+
+- `ga_bot/tools/evaluate_model.py`: 단일 모델 반복 평가
+- `ga_bot/tools/select_best_candidate.py`: `models/score400` 후보 자동 선발
+- `ga_bot/tools/run_pipeline.py`: 평가/선발 파이프라인 실행
+
+예시:
+
+```powershell
+py -3 ga_bot/tools/run_pipeline.py --skip-train --runs 100
+```
+
 이 폴더는 유전 알고리즘 기반 스네이크 봇을 관리합니다.
 
 ## 파일 구조
@@ -26,7 +45,19 @@ python snake_ga_play.py
 반복 평가(예정):
 
 ```powershell
-python ga_bot/evaluate_model.py
+py -3 ga_bot/tools/evaluate_model.py --runs 100
+```
+
+후보 자동 선발:
+
+```powershell
+py -3 ga_bot/tools/select_best_candidate.py --runs 100 --include-current-best
+```
+
+한 번에 평가/선발:
+
+```powershell
+py -3 ga_bot/tools/run_pipeline.py --skip-train --runs 100
 ```
 
 ## 설계 기록
