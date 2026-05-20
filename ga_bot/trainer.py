@@ -14,7 +14,9 @@ from ga_bot.storage import (
     load_checkpoint,
     save_best_model,
     save_checkpoint,
+    save_score400_candidate,
 )
+from snake_core import BOARD_CELLS
 
 POPULATION_SIZE = 40
 GENERATIONS = 100
@@ -115,6 +117,11 @@ def train(generations=GENERATIONS, resume=True):
     end_generation = start_generation + generations - 1
     for generation in range(start_generation, end_generation + 1):
         evaluate_population(population)
+
+        for rank, individual in enumerate(population, start=1):
+            if individual.score >= BOARD_CELLS:
+                save_score400_candidate(individual, generation, rank)
+
         if (
             best_individual is None
             or individual_rank(population[0]) > individual_rank(best_individual)

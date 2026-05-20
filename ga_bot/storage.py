@@ -9,6 +9,7 @@ from ga_bot.policy import Individual
 BASE_DIR = Path(__file__).resolve().parent
 MODELS_DIR = BASE_DIR / "models"
 LOGS_DIR = BASE_DIR / "logs"
+SCORE400_DIR = MODELS_DIR / "score400"
 BEST_MODEL_PATH = MODELS_DIR / "best_weights.json"
 CHECKPOINT_PATH = MODELS_DIR / "checkpoint.json"
 HISTORY_PATH = LOGS_DIR / "training_history.csv"
@@ -18,6 +19,7 @@ def ensure_storage_dirs():
     """모델과 로그 저장 폴더를 만듭니다."""
     MODELS_DIR.mkdir(exist_ok=True)
     LOGS_DIR.mkdir(exist_ok=True)
+    SCORE400_DIR.mkdir(exist_ok=True)
 
 
 def individual_to_dict(individual, generation=None):
@@ -47,6 +49,17 @@ def save_best_model(individual, generation):
     """현재까지 가장 좋은 개체를 JSON 파일로 저장합니다."""
     ensure_storage_dirs()
     with BEST_MODEL_PATH.open("w", encoding="utf-8") as file:
+        json.dump(individual_to_dict(individual, generation), file, indent=2)
+
+
+def save_score400_candidate(individual, generation, rank=0):
+    """score=400 이상 개체를 후보 파일로 별도 저장합니다."""
+    ensure_storage_dirs()
+    candidate_path = SCORE400_DIR / (
+        f"score400_gen{generation:04d}_r{rank:02d}_"
+        f"fit{int(individual.fitness)}_steps{int(individual.steps)}.json"
+    )
+    with candidate_path.open("w", encoding="utf-8") as file:
         json.dump(individual_to_dict(individual, generation), file, indent=2)
 
 
@@ -112,4 +125,3 @@ def append_history(generation, population):
             best.steps,
             round(average_fitness, 2),
         ])
-
