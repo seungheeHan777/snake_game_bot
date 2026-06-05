@@ -20,10 +20,11 @@ from snake_core import BOARD_CELLS
 
 POPULATION_SIZE = 40
 GENERATIONS = 100
-MUTATION_RATE = 0.12
+MUTATION_RATE = 0.18
 MUTATION_AMOUNT = 0.35
 ELITE_COUNT = 4
 INITIAL_NOISE_SCALE = 0.35
+EARLY_STOP_PATIENCE = 50
 
 
 def create_individual(preset_name="balanced_v1"):
@@ -102,7 +103,7 @@ def next_generation(population):
     return next_population
 
 
-def train(generations=GENERATIONS, resume=True):
+def train(generations=GENERATIONS, resume=True, early_stop_patience=EARLY_STOP_PATIENCE):
     """여러 세대를 학습하고 가장 좋은 개체를 반환합니다."""
     checkpoint = load_checkpoint() if resume else None
     if checkpoint:
@@ -115,6 +116,7 @@ def train(generations=GENERATIONS, resume=True):
         best_individual = None
 
     end_generation = start_generation + generations - 1
+    no_improve_generations = 0
     for generation in range(start_generation, end_generation + 1):
         evaluate_population(population)
 
@@ -122,12 +124,14 @@ def train(generations=GENERATIONS, resume=True):
             if individual.score >= BOARD_CELLS:
                 save_score400_candidate(individual, generation, rank)
 
+        improved = False
         if (
             best_individual is None
             or individual_rank(population[0]) > individual_rank(best_individual)
         ):
             best_individual = population[0]
             save_best_model(best_individual, generation)
+            improved = True
 
         append_history(generation, population)
         save_checkpoint(population, generation, best_individual)
@@ -137,6 +141,23 @@ def train(generations=GENERATIONS, resume=True):
             f"score={population[0].score} "
             f"steps={population[0].steps}"
         )
+
+        if improved:
+            no_improve_generations = 0
+        else:
+            no_improve_generations += 1
+
+        if (
+            early_stop_patience is not None
+            and early_stop_patience > 0
+            and no_improve_generations >= early_stop_patience
+        ):
+            print(
+                f"early-stop: no best improvement for "
+                f"{no_improve_generations} generations"
+            )
+            break
+
         population = next_generation(population)
 
     return best_individual

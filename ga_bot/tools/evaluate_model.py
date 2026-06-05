@@ -29,12 +29,14 @@ def load_model_from_path(path: Path) -> Individual:
 def evaluate_individual(individual: Individual, runs: int, target_score: int) -> dict:
     scores = []
     steps = []
+    fitnesses = []
     success = 0
 
     for _ in range(runs):
         simulate_game(individual)
         scores.append(individual.score)
         steps.append(individual.steps)
+        fitnesses.append(individual.fitness)
         if individual.score >= target_score:
             success += 1
 
@@ -47,6 +49,9 @@ def evaluate_individual(individual: Individual, runs: int, target_score: int) ->
         "min_score": min(scores) if scores else 0,
         "avg_score": (sum(scores) / len(scores)) if scores else 0.0,
         "avg_steps": (sum(steps) / len(steps)) if steps else 0.0,
+        "avg_fitness": (sum(fitnesses) / len(fitnesses)) if fitnesses else 0.0,
+        "max_fitness": max(fitnesses) if fitnesses else 0.0,
+        "min_fitness": min(fitnesses) if fitnesses else 0.0,
     }
 
 

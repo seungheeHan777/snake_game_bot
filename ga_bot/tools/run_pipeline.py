@@ -33,11 +33,28 @@ def parse_args():
         help="Training generations for this run",
     )
     parser.add_argument(
+        "--early-stop-patience",
+        type=int,
+        default=50,
+        help="Stop training early if best does not improve for this many generations",
+    )
+    parser.add_argument(
         "--no-resume",
         action="store_true",
         help="Start training from scratch instead of checkpoint resume",
     )
     parser.add_argument("--runs", type=int, default=100, help="Evaluation runs")
+    parser.add_argument(
+        "--selection-rounds",
+        type=int,
+        default=1,
+        help="Repeated selection rounds per candidate",
+    )
+    parser.add_argument(
+        "--no-write-best",
+        action="store_true",
+        help="Run selection without overwriting best_weights.json",
+    )
     parser.add_argument(
         "--target-score",
         type=int,
@@ -51,7 +68,11 @@ def main():
     args = parse_args()
 
     if not args.skip_train:
-        train(generations=args.train_generations, resume=not args.no_resume)
+        train(
+            generations=args.train_generations,
+            resume=not args.no_resume,
+            early_stop_patience=args.early_stop_patience,
+        )
 
     before = load_best_model()
     if before is None:
@@ -60,8 +81,10 @@ def main():
 
     selected_path, selection_eval = select_best_candidate(
         runs=args.runs,
+        rounds=args.selection_rounds,
         target_score=args.target_score,
         include_current_best=True,
+        write_best=not args.no_write_best,
     )
 
     after = load_best_model()
