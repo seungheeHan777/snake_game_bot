@@ -6,3 +6,11 @@ __pycache__/
 .mypy_cache/
 .ruff_cache/
 .vscode/
+# GA generated outputs
+ga_bot/logs/
+ga_bot/models/
+ga_bot/backups/
+
+# Python cache
+__pycache__/
+*.pyc

@@ -1,5 +1,35 @@
 # TODO
 
+## stable_bot 최종 평가
+
+- [x] `stable` 기본값 shortcut distance 4 기준 100판 평가 완료
+- [x] `success=100/100`
+- [x] `avg_score=400.00`
+- [x] 목표 기준 `score=400` 성공률 80% 이상 통과
+- [ ] 화면 플레이 확인
+
+## 현재 stable_bot 진행
+
+- [x] `stable_bot/evaluate.py` 반복 평가 스크립트 구현
+- [x] stable/fallback 반복 평가 결과 비교
+- [x] shortcut 계산 지연 개선
+- [x] shortcut 거리 기준 조정
+
+## 4단계: 안정 완주 봇
+
+- [x] `stable_bot/` 폴더 생성
+- [x] GA 방식의 한계와 새 방향 문서화
+- [x] Hamiltonian cycle 기반 fallback 경로 설계
+- [x] Hamiltonian fallback 코드 생성 및 headless 완주 검증
+- [x] 먹이 shortcut 허용 조건 설계
+- [x] `stable_bot/hamiltonian.py` 구현
+- [x] `stable_bot/safety.py` 구현
+- [x] `stable_bot/planner.py` 구현
+- [ ] `stable_bot/runner.py` 또는 기존 실행 파일 연결 방식 결정
+- [ ] 100판 반복 평가에서 `score=400` 성공률 80% 이상 확인
+
+세부 작업은 `stable_bot/TODO.md`에서 관리합니다.
+
 ## 1단계: 수동 게임 구조 정리
 
 - [x] `snake_core.py`에 공통 상수와 helper 분리
