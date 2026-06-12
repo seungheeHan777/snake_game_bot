@@ -1,5 +1,38 @@
 # snake_game_bot
 
+## 수동 플레이 저장 UI 계획
+
+수동 플레이 결과도 PostgreSQL DB에 저장할 예정입니다. 플레이어 이름은 터미널 입력이 아니라 pygame 게임 창 안에서 입력받습니다.
+
+1차 구현 범위:
+
+- 게임 종료 후 이름 입력 화면 표시
+- `Save` 버튼으로 `players`와 `game_runs`에 저장
+- 저장 성공 시 `Saved` 표시
+- `Retry` 버튼으로 새 게임 시작
+
+장기 UI 계획:
+
+```text
+Start Screen
+  [Start]
+  [Ranking]
+
+Game Screen
+  snake game
+
+Result Screen
+  name input
+  [Save]
+  [Retry]
+
+Ranking Screen
+  ranking list
+  [Back]
+```
+
+랭킹 화면은 나중 단계에서 구현합니다. 다음 구현 대상은 수동 플레이 종료 후 이름 입력 및 저장 화면입니다.
+
 ## 현재 상태 기록
 
 처음에는 유전 알고리즘 기반 `ga_bot/`으로 자동 플레이 봇을 만들었습니다. GA 학습 중 최고점 `score=400`, 즉 게임 성공 사례는 나왔지만, 같은 모델을 반복 평가했을 때 안정적으로 성공하지 못했습니다. 따라서 `ga_bot/`은 실험 및 비교 기준으로 유지합니다.

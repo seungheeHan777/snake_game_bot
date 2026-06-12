@@ -1,5 +1,45 @@
 # Database
 
+## 수동 플레이 저장 계획
+
+수동 플레이 결과도 `game_runs`에 저장합니다.
+
+저장 방식:
+
+```text
+actor_type = player
+run_type = screen
+player_id = players.id
+bot_config_id = null
+evaluation_session_id = null
+```
+
+결과 화면:
+
+```text
+Game Over 또는 Win
+Score
+Name input
+[Save]
+[Retry]
+```
+
+`Save`를 누르면:
+
+```text
+1. players에서 display_name 기준 get-or-create
+2. game_runs에 수동 플레이 결과 저장
+3. Saved 표시
+```
+
+`Retry`를 누르면:
+
+```text
+DB 저장 없이 새 게임 시작
+```
+
+랭킹 화면은 장기 목표로 분리합니다.
+
 PostgreSQL에 게임 결과를 저장하기 위한 DB 작업 공간입니다.
 
 ## 역할 분리

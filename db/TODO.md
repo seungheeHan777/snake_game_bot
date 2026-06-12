@@ -1,5 +1,15 @@
 # Database TODO
 
+## 수동 플레이 저장 결정
+
+- [x] 게임 종료 후 이름 입력
+- [x] 이름 입력은 터미널이 아니라 pygame 창에서 처리
+- [x] 저장 후 `Saved` 표시
+- [x] `Retry` 버튼으로 다시 시작
+- [ ] 결과 화면 UI 구현
+- [ ] 수동 플레이 `game_runs` 저장 연결
+- [ ] 랭킹 화면은 추후 구현
+
 ## 1단계: 준비
 
 - [x] PostgreSQL DB `snake_game_bot` 생성
