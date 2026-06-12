@@ -1,5 +1,63 @@
 # snake_game_bot
 
+## 현재 상태 기록
+
+처음에는 유전 알고리즘 기반 `ga_bot/`으로 자동 플레이 봇을 만들었습니다. GA 학습 중 최고점 `score=400`, 즉 게임 성공 사례는 나왔지만, 같은 모델을 반복 평가했을 때 안정적으로 성공하지 못했습니다. 따라서 `ga_bot/`은 실험 및 비교 기준으로 유지합니다.
+
+이후 안정적인 완주를 목표로 `stable_bot/`을 추가로 개발했습니다. `stable_bot`은 Hamiltonian fallback 경로를 기본으로 사용하고, 안전하다고 판단되는 경우에만 shortcut을 사용합니다. shortcut 계산은 게임 루프를 막지 않도록 백그라운드에서 처리합니다.
+
+현재 검증 결과:
+
+```text
+stable bot
+100판 평가
+success=100/100
+score=400 전부 성공
+```
+
+현재 안정 봇 실행 명령:
+
+```powershell
+py -3 snake_stable_bot.py
+```
+
+정리:
+
+- `ga_bot/`: 유전 알고리즘 실험 및 baseline
+- `stable_bot/`: 현재 안정 완주 봇
+- `snake_stable_bot.py`: shortcut 포함 stable bot 실행 파일
+
+## DB 저장 기능
+
+PostgreSQL 기반 게임 결과 저장 작업을 시작했습니다.
+
+현재 생성된 DB 작업 폴더:
+
+```text
+db/
+```
+
+현재 DB 구조:
+
+- `players`: 사람 플레이어 정보, 사용자가 직접 생성
+- `bot_configs`: 봇 설정 정보
+- `evaluation_sessions`: headless 반복 평가 묶음
+- `game_runs`: 사람/봇의 실제 한 판 결과
+
+현재 구현 완료:
+
+- PostgreSQL 연결 코드
+- 샘플 저장 테스트
+- headless 평가 결과 DB 저장
+
+headless 평가 저장 실행:
+
+```powershell
+py -3 -m stable_bot.evaluate --runs 30 --mode stable --save-db
+```
+
+수동 화면 플레이 저장은 아직 구현하지 않았습니다. 플레이어 이름을 터미널이 아니라 pygame 실행창에서 입력받는 화면 구성을 먼저 논의한 뒤 진행합니다.
+
 ## 현재 방향: 안정 완주 봇
 
 현재 유전 알고리즘 기반 `ga_bot/`은 실험 및 비교 기준으로 유지합니다. 반복 평가 결과, 현 GA 모델은 가끔 높은 점수 또는 400점을 찍을 수는 있지만, 같은 모델을 여러 번 돌렸을 때 안정적으로 400점을 재현하지 못했습니다.

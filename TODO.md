@@ -1,5 +1,16 @@
 # TODO
 
+## DB 저장 기능
+
+- [x] PostgreSQL 연결 코드 생성
+- [x] `players` 테이블을 제외한 DB 스키마 작성
+- [x] 샘플 저장 테스트 완료
+- [x] headless 평가 결과 DB 저장 구현
+- [x] `stable_bot.evaluate --save-db` 저장 테스트 완료
+- [ ] 수동 화면 플레이 결과 저장 화면 구성 논의
+- [ ] pygame 창에서 player name 입력 UI 구현
+- [ ] 수동 플레이 결과를 `game_runs`에 저장
+
 ## stable_bot 최종 평가
 
 - [x] `stable` 기본값 shortcut distance 4 기준 100판 평가 완료

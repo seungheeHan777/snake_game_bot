@@ -1,5 +1,25 @@
 # Stable Bot
 
+## 현재 역할
+
+`stable_bot/`은 유전 알고리즘 방식의 한계를 보완하기 위해 추가로 개발한 안정 완주 봇입니다.
+
+기존 `ga_bot/`은 `score=400`을 달성한 모델이 있었지만, 반복 평가에서 성공률이 안정적이지 않았습니다. 그래서 `stable_bot/`은 학습된 가중치에 의존하지 않고, 결정론적 안전 경로를 기반으로 설계했습니다.
+
+핵심 전략:
+
+- Hamiltonian fallback 경로로 죽지 않는 기본 경로 확보
+- 안전 조건을 통과한 shortcut만 사용
+- shortcut 계산은 백그라운드에서 처리해 게임 루프 지연 방지
+
+현재 결과:
+
+```text
+100판 평가
+success=100/100
+score=400 전부 성공
+```
+
 ## 100판 최종 평가
 
 현재 기본 설정:
@@ -26,6 +46,24 @@ elapsed_seconds=175.073
 ```powershell
 py -3 snake_stable_bot.py
 ```
+
+## DB 저장
+
+headless 평가는 DB 저장을 지원합니다.
+
+```powershell
+py -3 -m stable_bot.evaluate --runs 30 --mode stable --save-db
+```
+
+저장 대상:
+
+```text
+evaluation_sessions
+game_runs
+bot_configs
+```
+
+화면 플레이 저장은 아직 구현하지 않았습니다. 수동 플레이어 이름은 터미널이 아니라 pygame 실행창에서 입력받는 방식으로 진행할 예정이며, 화면 구성 논의 후 구현합니다.
 
 ## 반복 평가 실행
 
