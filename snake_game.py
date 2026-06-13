@@ -203,8 +203,16 @@ def show_start_screen(screen, font):
 def show_ranking_screen(screen, font):
     """Show saved player rankings."""
     back_rect = pygame.Rect(110, 330, 180, 45)
-    small_font = pygame.font.SysFont(None, 28)
+    small_font = pygame.font.SysFont(None, 24)
+    header_font = pygame.font.SysFont(None, 22)
     rankings, message = load_rankings()
+    table_rect = pygame.Rect(20, 85, 360, 225)
+    columns = [
+        ("Rank", 26),
+        ("Name", 82),
+        ("Score", 218),
+        ("Steps", 292),
+    ]
 
     while True:
         screen.fill(WHITE)
@@ -218,14 +226,7 @@ def show_ranking_screen(screen, font):
             empty_text = small_font.render("No saved scores", True, BLACK)
             screen.blit(empty_text, (95, 130))
         else:
-            for index, row in enumerate(rankings, start=1):
-                y = 90 + (index - 1) * 23
-                line = (
-                    f"{index}. {row['display_name']} "
-                    f"{row['score']} pts / {row['steps']} steps"
-                )
-                line_text = small_font.render(line[:38], True, BLACK)
-                screen.blit(line_text, (30, y))
+            draw_ranking_table(screen, header_font, small_font, table_rect, columns, rankings)
 
         draw_button(screen, font, back_rect, "Back")
 
@@ -242,6 +243,55 @@ def show_ranking_screen(screen, font):
                     return "back"
 
         pygame.display.flip()
+
+
+def draw_ranking_table(screen, header_font, row_font, table_rect, columns, rankings):
+    """Draw ranking data in fixed columns."""
+    row_height = 22
+    header_height = 26
+    pygame.draw.rect(screen, BLACK, table_rect, 2)
+
+    header_bottom = table_rect.y + header_height
+    pygame.draw.line(
+        screen,
+        BLACK,
+        (table_rect.x, header_bottom),
+        (table_rect.right, header_bottom),
+        2,
+    )
+
+    for _, x in columns[1:]:
+        pygame.draw.line(
+            screen,
+            BLACK,
+            (x - 8, table_rect.y),
+            (x - 8, table_rect.bottom),
+            1,
+        )
+
+    for label, x in columns:
+        label_text = header_font.render(label, True, BLACK)
+        screen.blit(label_text, (x, table_rect.y + 6))
+
+    for index, row in enumerate(rankings[:10], start=1):
+        y = header_bottom + (index - 1) * row_height
+        pygame.draw.line(
+            screen,
+            BLACK,
+            (table_rect.x, y + row_height),
+            (table_rect.right, y + row_height),
+            1,
+        )
+
+        values = [
+            str(index),
+            str(row["display_name"])[:12],
+            str(row["score"]),
+            str(row["steps"]),
+        ]
+        for value, (_, x) in zip(values, columns):
+            value_text = row_font.render(value, True, BLACK)
+            screen.blit(value_text, (x, y + 4))
 
 
 def load_rankings():
