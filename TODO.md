@@ -2,6 +2,7 @@
 
 ## 수동 플레이 결과 저장 UI
 
+- [x] 저장 실패 사유를 화면에 짧게 표시
 - [x] `snake_game.py` 실행 후 게임 종료 화면 표시
 - [x] pygame 창에서 player name 입력
 - [x] `Save` 버튼으로 `players`, `game_runs` 저장 연결

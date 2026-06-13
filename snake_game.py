@@ -329,6 +329,7 @@ def show_manual_result_screen(screen, font, result):
     """Show name input, save, and retry controls after manual play."""
     player_name = ""
     message = ""
+    message_font = pygame.font.SysFont(None, 28)
     save_rect = pygame.Rect(70, 285, 120, 48)
     retry_rect = pygame.Rect(210, 285, 120, 48)
     input_rect = pygame.Rect(70, 215, 260, 44)
@@ -342,7 +343,7 @@ def show_manual_result_screen(screen, font, result):
         steps_text = font.render(f"STEPS : {result['steps']}", True, BLACK)
         name_label = font.render("NAME", True, BLACK)
         name_text = font.render(player_name or "", True, BLACK)
-        message_text = font.render(message, True, BLACK)
+        message_text = message_font.render(message, True, BLACK)
 
         screen.blit(title_text, (70, 45))
         screen.blit(score_text, (70, 95))
@@ -367,7 +368,7 @@ def show_manual_result_screen(screen, font, result):
                 elif event.key == pygame.K_RETURN:
                     message = try_save_manual_result(player_name, result)
                     if message == "Saved":
-                        draw_result_message(screen, font, message)
+                        draw_result_message(screen, message_font, message)
                         pygame.time.wait(500)
                         return "menu"
                 elif (
@@ -380,7 +381,7 @@ def show_manual_result_screen(screen, font, result):
                 if save_rect.collidepoint(event.pos):
                     message = try_save_manual_result(player_name, result)
                     if message == "Saved":
-                        draw_result_message(screen, font, message)
+                        draw_result_message(screen, message_font, message)
                         pygame.time.wait(500)
                         return "menu"
                 elif retry_rect.collidepoint(event.pos):
@@ -403,9 +404,21 @@ def try_save_manual_result(player_name, result):
         return "Name required"
     try:
         save_manual_result(player_name, result)
-    except Exception:
-        return "Save failed"
+    except Exception as error:
+        return format_save_error(error)
     return "Saved"
+
+
+def format_save_error(error):
+    """Return a short user-facing DB save error."""
+    error_text = str(error).lower()
+    if "connection" in error_text or "could not connect" in error_text:
+        return "DB connection failed"
+    if "does not exist" in error_text or "relation" in error_text:
+        return "DB table missing"
+    if "check constraint" in error_text or "foreign key" in error_text:
+        return "DB schema mismatch"
+    return f"Save failed: {error.__class__.__name__}"
 
 
 if __name__ == "__main__":
