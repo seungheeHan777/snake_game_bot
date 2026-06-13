@@ -29,6 +29,11 @@ def run_game(
     font = pygame.font.SysFont(None, 50)
     clock = pygame.time.Clock()
 
+    if choose_direction is None and save_manual_results:
+        run_manual_app(screen, font, clock, choose_direction, move_interval)
+        pygame.quit()
+        return
+
     restart = True
     while restart:
         result = _run_single_game(
@@ -53,6 +58,38 @@ def run_game(
                 rule.show_game_over(screen, font, result["score"])
 
     pygame.quit()
+
+
+def run_manual_app(screen, font, clock, choose_direction, move_interval):
+    """Run manual app screens: start, game, result, and ranking."""
+    while True:
+        action = show_start_screen(screen, font)
+        if action == "quit":
+            return
+        if action == "ranking":
+            if show_ranking_screen(screen, font) == "quit":
+                return
+            continue
+        if action != "start":
+            continue
+
+        while True:
+            result = _run_single_game(
+                screen,
+                clock,
+                choose_direction,
+                move_interval,
+            )
+            if result["final_reason"] == "user_quit":
+                return
+
+            result_action = show_manual_result_screen(screen, font, result)
+            if result_action == "retry":
+                continue
+            if result_action in ("menu", "quit"):
+                if result_action == "quit":
+                    return
+                break
 
 
 def _run_single_game(screen, clock, choose_direction, move_interval):
@@ -134,6 +171,89 @@ def draw_button(screen, font, rect, label):
     screen.blit(label_text, label_rect)
 
 
+def show_start_screen(screen, font):
+    """Show start menu and return selected action."""
+    start_rect = pygame.Rect(80, 150, 240, 55)
+    ranking_rect = pygame.Rect(80, 225, 240, 55)
+
+    while True:
+        screen.fill(WHITE)
+        title_text = font.render("SNAKE", True, BLACK)
+        screen.blit(title_text, title_text.get_rect(center=(BOARD_WIDTH // 2, 80)))
+        draw_button(screen, font, start_rect, "Start")
+        draw_button(screen, font, ranking_rect, "Ranking")
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "quit"
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    return "start"
+                if event.key == pygame.K_r:
+                    return "ranking"
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if start_rect.collidepoint(event.pos):
+                    return "start"
+                if ranking_rect.collidepoint(event.pos):
+                    return "ranking"
+
+        pygame.display.flip()
+
+
+def show_ranking_screen(screen, font):
+    """Show saved player rankings."""
+    back_rect = pygame.Rect(110, 330, 180, 45)
+    small_font = pygame.font.SysFont(None, 28)
+    rankings, message = load_rankings()
+
+    while True:
+        screen.fill(WHITE)
+        title_text = font.render("RANKING", True, BLACK)
+        screen.blit(title_text, (70, 30))
+
+        if message:
+            message_text = small_font.render(message, True, BLACK)
+            screen.blit(message_text, (45, 110))
+        elif not rankings:
+            empty_text = small_font.render("No saved scores", True, BLACK)
+            screen.blit(empty_text, (95, 130))
+        else:
+            for index, row in enumerate(rankings, start=1):
+                y = 90 + (index - 1) * 23
+                line = (
+                    f"{index}. {row['display_name']} "
+                    f"{row['score']} pts / {row['steps']} steps"
+                )
+                line_text = small_font.render(line[:38], True, BLACK)
+                screen.blit(line_text, (30, y))
+
+        draw_button(screen, font, back_rect, "Back")
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "quit"
+            if event.type == pygame.KEYDOWN and event.key in (
+                pygame.K_ESCAPE,
+                pygame.K_RETURN,
+            ):
+                return "back"
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if back_rect.collidepoint(event.pos):
+                    return "back"
+
+        pygame.display.flip()
+
+
+def load_rankings():
+    """Load top player runs for the ranking screen."""
+    try:
+        from db.repository import get_top_player_runs
+
+        return get_top_player_runs(limit=10), ""
+    except Exception:
+        return [], "Ranking load failed"
+
+
 def save_manual_result(player_name, result):
     """Save one manual screen-play result."""
     from db.repository import create_game_run, get_or_create_player
@@ -196,6 +316,10 @@ def show_manual_result_screen(screen, font, result):
                     player_name = player_name[:-1]
                 elif event.key == pygame.K_RETURN:
                     message = try_save_manual_result(player_name, result)
+                    if message == "Saved":
+                        draw_result_message(screen, font, message)
+                        pygame.time.wait(500)
+                        return "menu"
                 elif (
                     len(player_name) < 16
                     and event.unicode
@@ -205,10 +329,21 @@ def show_manual_result_screen(screen, font, result):
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if save_rect.collidepoint(event.pos):
                     message = try_save_manual_result(player_name, result)
+                    if message == "Saved":
+                        draw_result_message(screen, font, message)
+                        pygame.time.wait(500)
+                        return "menu"
                 elif retry_rect.collidepoint(event.pos):
                     return "retry"
 
         pygame.display.flip()
+
+
+def draw_result_message(screen, font, message):
+    """Draw a result-screen message before moving to another screen."""
+    message_text = font.render(message, True, BLACK)
+    screen.blit(message_text, (70, 345))
+    pygame.display.flip()
 
 
 def try_save_manual_result(player_name, result):

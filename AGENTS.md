@@ -1,5 +1,15 @@
 # AGENTS.md
 
+## DB / 화면 저장 작업 규칙
+
+- 수동 플레이 저장은 `snake_game.py`의 pygame 화면에서 처리합니다.
+- 터미널 입력으로 player name을 받지 않습니다.
+- 수동 플레이 결과는 `actor_type=player`, `run_type=screen`으로 `game_runs`에 저장합니다.
+- 플레이어 이름은 `players.display_name` 기준으로 get-or-create 합니다.
+- 랭킹 화면은 `game_runs`와 `players`를 조회해서 표시합니다.
+- DB 저장/조회 helper는 `db/repository.py`에 둡니다.
+- DB 연결 정보는 `.env`에 두고 Git에 포함하지 않습니다.
+
 ## stable_bot 작업 규칙
 
 - 안정적인 400점 완주를 목표로 하는 주 작업은 `stable_bot/`에서 진행합니다.

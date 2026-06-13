@@ -231,6 +231,47 @@ def create_game_run(
             return cur.fetchone()[0]
 
 
+def get_top_player_runs(limit=10):
+    """Return top manual screen-play results."""
+    with connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT
+                    p.display_name,
+                    gr.score,
+                    gr.steps,
+                    gr.victory,
+                    gr.final_reason,
+                    gr.created_at
+                FROM game_runs gr
+                JOIN players p ON p.id = gr.player_id
+                WHERE gr.actor_type = 'player'
+                  AND gr.run_type = 'screen'
+                ORDER BY
+                    gr.score DESC,
+                    gr.victory DESC,
+                    gr.steps ASC,
+                    gr.created_at DESC
+                LIMIT %s
+                """,
+                (limit,),
+            )
+            rows = cur.fetchall()
+
+    return [
+        {
+            "display_name": row[0],
+            "score": row[1],
+            "steps": row[2],
+            "victory": row[3],
+            "final_reason": row[4],
+            "created_at": row[5],
+        }
+        for row in rows
+    ]
+
+
 def psycopg_json(value):
     """Convert a Python value to JSON text for jsonb parameters."""
     import json

@@ -10,11 +10,13 @@ py -3 snake_game.py
 
 현재 구현된 흐름:
 
+- 시작 화면에서 `Start` 또는 `Ranking` 선택
 - 게임 종료 후 `WIN` 또는 `GAME OVER` 결과 화면 표시
 - pygame 창에서 플레이어 이름 입력
 - `Save` 버튼으로 `players`, `game_runs`에 결과 저장
-- 저장 성공 시 `Saved` 표시
+- 저장 성공 시 `Saved` 표시 후 시작 화면으로 이동
 - `Retry` 버튼으로 새 게임 시작
+- `Ranking` 화면에서 저장된 상위 수동 플레이 기록 조회
 
 현재 저장되는 수동 플레이 값:
 
@@ -24,7 +26,7 @@ py -3 snake_game.py
 - `score`, `steps`, `success`, `dead`, `victory`, `final_reason`
 - `started_at`, `finished_at`, `elapsed_seconds`
 
-시작 화면, 랭킹 화면, 저장 후 시작 화면 이동은 다음 단계에서 구현합니다.
+랭킹 화면은 현재 조회 전용입니다. 랭킹 UI 세부 디자인과 필터 기능은 다음 단계에서 개선합니다.
 
 ## 수동 플레이 저장 UI 계획
 

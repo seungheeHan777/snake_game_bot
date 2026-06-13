@@ -27,8 +27,25 @@ py -3 snake_game.py
 아직 남은 작업:
 
 - 실제 pygame 창에서 저장 동작 수동 확인
-- 시작 화면과 랭킹 화면 구현
-- 랭킹 조회 쿼리와 화면 연결
+- 랭킹 화면 UI 세부 디자인 개선
+- 랭킹 필터와 정렬 기준 결정
+
+랭킹 조회:
+
+```text
+db.repository.get_top_player_runs(limit=10)
+```
+
+조회 기준:
+
+```text
+actor_type = player
+run_type = screen
+score DESC
+victory DESC
+steps ASC
+created_at DESC
+```
 
 ## 수동 플레이 저장 계획
 
