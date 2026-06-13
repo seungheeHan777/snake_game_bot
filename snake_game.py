@@ -1,20 +1,27 @@
-"""스네이크 게임 실행 흐름을 담당합니다."""
+"""Run the snake game loop."""
 
 from datetime import datetime, timedelta
+from time import perf_counter
 
 import pygame
 
 from apple import Apple
 from rule import Rule
 from snake import Snake
-from snake_core import BOARD_HEIGHT, BOARD_WIDTH, WHITE
+from snake_core import BLACK, BOARD_HEIGHT, BOARD_WIDTH, GREEN, RED, WHITE
 
 
-def run_game(choose_direction=None, title="snake game", move_interval=0.1):
-    """pygame을 초기화하고 게임 루프를 실행합니다.
+def run_game(
+    choose_direction=None,
+    title="snake game",
+    move_interval=0.1,
+    save_manual_results=False,
+):
+    """Run pygame snake.
 
-    choose_direction이 없으면 키보드 입력으로 수동 플레이를 합니다.
-    choose_direction이 있으면 그 함수가 다음 이동 방향을 결정합니다.
+    When choose_direction is None, keyboard input controls the snake.
+    When choose_direction is provided, that function controls the snake.
+    Manual result saving is only shown for keyboard-controlled play.
     """
     pygame.init()
     screen = pygame.display.set_mode([BOARD_WIDTH, BOARD_HEIGHT])
@@ -22,11 +29,43 @@ def run_game(choose_direction=None, title="snake game", move_interval=0.1):
     font = pygame.font.SysFont(None, 50)
     clock = pygame.time.Clock()
 
+    restart = True
+    while restart:
+        result = _run_single_game(
+            screen,
+            clock,
+            choose_direction,
+            move_interval,
+        )
+        restart = False
+
+        if result["final_reason"] == "user_quit":
+            break
+
+        if choose_direction is None and save_manual_results:
+            action = show_manual_result_screen(screen, font, result)
+            restart = action == "retry"
+        else:
+            rule = Rule()
+            if result["victory"]:
+                rule.show_victory(screen, font)
+            else:
+                rule.show_game_over(screen, font, result["score"])
+
+    pygame.quit()
+
+
+def _run_single_game(screen, clock, choose_direction, move_interval):
+    """Run one game and return result stats."""
     snake = Snake()
     apple = Apple()
     rule = Rule()
     running = True
     last_bot_move = datetime.now()
+    started_at = datetime.now().astimezone()
+    timer_start = perf_counter()
+    steps = 0
+    final_reason = "unknown"
 
     while running:
         clock.tick(60)
@@ -34,18 +73,24 @@ def run_game(choose_direction=None, title="snake game", move_interval=0.1):
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                final_reason = "user_quit"
                 running = False
-            elif choose_direction is None:
-                snake.handle_event(event)
+            elif choose_direction is None and snake.handle_event(event):
+                steps += 1
+
+        if not running:
+            break
 
         if choose_direction is None:
-            snake.auto_move(move_interval)
+            if snake.auto_move(move_interval):
+                steps += 1
         elif timedelta(seconds=move_interval) <= datetime.now() - last_bot_move:
             direction = choose_direction(snake, apple)
             if direction is None:
-                running = rule.show_game_over(screen, font, snake.score)
-            else:
-                snake.move(direction)
+                final_reason = "game_over"
+                running = False
+            elif snake.move(direction):
+                steps += 1
                 last_bot_move = datetime.now()
 
         snake.draw(screen)
@@ -56,14 +101,127 @@ def run_game(choose_direction=None, title="snake game", move_interval=0.1):
             apple.relocate(snake.positions)
 
         if rule.is_victory(snake):
-            running = rule.show_victory(screen, font)
+            final_reason = "victory"
+            running = False
         elif rule.is_game_over(snake):
-            running = rule.show_game_over(screen, font, snake.score)
+            final_reason = "game_over"
+            running = False
 
         pygame.display.flip()
 
-    pygame.quit()
+    finished_at = datetime.now().astimezone()
+    victory = final_reason == "victory"
+    dead = final_reason == "game_over"
+    return {
+        "score": snake.score,
+        "steps": steps,
+        "success": victory,
+        "dead": dead,
+        "victory": victory,
+        "final_reason": final_reason,
+        "elapsed_seconds": perf_counter() - timer_start,
+        "started_at": started_at,
+        "finished_at": finished_at,
+    }
+
+
+def draw_button(screen, font, rect, label):
+    """Draw a simple rectangular button."""
+    pygame.draw.rect(screen, WHITE, rect)
+    pygame.draw.rect(screen, BLACK, rect, 2)
+    label_text = font.render(label, True, BLACK)
+    label_rect = label_text.get_rect(center=rect.center)
+    screen.blit(label_text, label_rect)
+
+
+def save_manual_result(player_name, result):
+    """Save one manual screen-play result."""
+    from db.repository import create_game_run, get_or_create_player
+
+    player_id = get_or_create_player(player_name)
+    return create_game_run(
+        actor_type="player",
+        run_type="screen",
+        player_id=player_id,
+        score=result["score"],
+        steps=result["steps"],
+        success=result["success"],
+        dead=result["dead"],
+        victory=result["victory"],
+        elapsed_seconds=result["elapsed_seconds"],
+        final_reason=result["final_reason"],
+        started_at=result["started_at"],
+        finished_at=result["finished_at"],
+    )
+
+
+def show_manual_result_screen(screen, font, result):
+    """Show name input, save, and retry controls after manual play."""
+    player_name = ""
+    message = ""
+    save_rect = pygame.Rect(70, 285, 120, 48)
+    retry_rect = pygame.Rect(210, 285, 120, 48)
+    input_rect = pygame.Rect(70, 215, 260, 44)
+    background = GREEN if result["victory"] else RED
+
+    while True:
+        screen.fill(background)
+        title = "WIN" if result["victory"] else "GAME OVER"
+        title_text = font.render(title, True, BLACK)
+        score_text = font.render(f"SCORE : {result['score']}", True, BLACK)
+        steps_text = font.render(f"STEPS : {result['steps']}", True, BLACK)
+        name_label = font.render("NAME", True, BLACK)
+        name_text = font.render(player_name or "", True, BLACK)
+        message_text = font.render(message, True, BLACK)
+
+        screen.blit(title_text, (70, 45))
+        screen.blit(score_text, (70, 95))
+        screen.blit(steps_text, (70, 140))
+        screen.blit(name_label, (70, 180))
+
+        pygame.draw.rect(screen, WHITE, input_rect)
+        pygame.draw.rect(screen, BLACK, input_rect, 2)
+        screen.blit(name_text, (input_rect.x + 8, input_rect.y + 8))
+
+        draw_button(screen, font, save_rect, "Save")
+        draw_button(screen, font, retry_rect, "Retry")
+        if message:
+            screen.blit(message_text, (70, 345))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return "quit"
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    player_name = player_name[:-1]
+                elif event.key == pygame.K_RETURN:
+                    message = try_save_manual_result(player_name, result)
+                elif (
+                    len(player_name) < 16
+                    and event.unicode
+                    and event.unicode.isprintable()
+                ):
+                    player_name += event.unicode
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if save_rect.collidepoint(event.pos):
+                    message = try_save_manual_result(player_name, result)
+                elif retry_rect.collidepoint(event.pos):
+                    return "retry"
+
+        pygame.display.flip()
+
+
+def try_save_manual_result(player_name, result):
+    """Try saving a manual result and return a display message."""
+    player_name = player_name.strip()
+    if not player_name:
+        return "Name required"
+    try:
+        save_manual_result(player_name, result)
+    except Exception:
+        return "Save failed"
+    return "Saved"
 
 
 if __name__ == "__main__":
-    run_game()
+    run_game(save_manual_results=True)

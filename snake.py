@@ -50,17 +50,18 @@ class Snake:
         """방향이 유효하면 뱀을 한 칸 이동합니다."""
         next_direction = direction or self.direction
         if not next_direction:
-            return
+            return False
         if direction and not can_change_direction(self.direction, direction):
-            return
+            return False
         move_snake(self.positions, next_direction)
         self.direction = next_direction
         self.last_moved = datetime.now()
+        return True
 
     def handle_event(self, event):
         """키보드 이벤트를 방향 입력으로 변환합니다."""
         if event.type != pygame.KEYDOWN:
-            return
+            return False
 
         key_directions = {
             pygame.K_UP: DIRECTION_ORDER[0],
@@ -69,12 +70,14 @@ class Snake:
             pygame.K_RIGHT: DIRECTION_ORDER[2],
         }
         if event.key in key_directions:
-            self.move(key_directions[event.key])
+            return self.move(key_directions[event.key])
+        return False
 
     def auto_move(self, interval_seconds=0.1):
         """마지막 이동 이후 일정 시간이 지나면 같은 방향으로 계속 이동합니다."""
         if timedelta(seconds=interval_seconds) <= datetime.now() - self.last_moved:
-            self.move()
+            return self.move()
+        return False
 
     def grow(self):
         """먹이를 먹었을 때 꼬리 위치를 하나 더 추가합니다."""

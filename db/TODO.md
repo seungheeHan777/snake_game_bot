@@ -1,5 +1,18 @@
 # Database TODO
 
+## 수동 플레이 저장 UI 현재 상태
+
+- [x] 게임 종료 후 결과 화면 표시
+- [x] pygame 창에서 player name 입력
+- [x] `Save` 버튼으로 `players` get-or-create
+- [x] `Save` 버튼으로 `game_runs` 저장
+- [x] 저장 성공 시 `Saved` 표시
+- [x] `Retry` 버튼으로 새 게임 시작
+- [ ] 실제 pygame 창에서 저장 수동 확인
+- [ ] 저장 실패 사유를 화면에 더 구체적으로 표시
+- [ ] 랭킹 조회 repository 함수 추가
+- [ ] 시작 화면 / 랭킹 화면 연결
+
 ## 수동 플레이 저장 결정
 
 - [x] 게임 종료 후 이름 입력

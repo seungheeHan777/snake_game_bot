@@ -1,5 +1,35 @@
 # Database
 
+## 수동 플레이 저장 구현 상태
+
+수동 플레이 결과 저장은 `snake_game.py`에 1차 연결했습니다.
+
+실행:
+
+```powershell
+py -3 snake_game.py
+```
+
+저장 흐름:
+
+```text
+게임 종료
+-> 결과 화면 표시
+-> player name 입력
+-> Save 클릭
+-> players에서 이름 기준 get-or-create
+-> game_runs에 actor_type=player, run_type=screen으로 저장
+-> Saved 표시
+```
+
+`Retry`를 누르면 DB 저장 없이 새 게임을 시작합니다.
+
+아직 남은 작업:
+
+- 실제 pygame 창에서 저장 동작 수동 확인
+- 시작 화면과 랭킹 화면 구현
+- 랭킹 조회 쿼리와 화면 연결
+
 ## 수동 플레이 저장 계획
 
 수동 플레이 결과도 `game_runs`에 저장합니다.
