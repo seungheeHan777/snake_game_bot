@@ -17,6 +17,7 @@ py -3 snake_game.py
 - 저장 성공 시 `Saved` 표시 후 시작 화면으로 이동
 - `Retry` 버튼으로 새 게임 시작
 - `Ranking` 화면에서 저장된 상위 수동 플레이 기록 조회
+- 랭킹 화면에서 `Score`, `Steps`, `Wins only` 기준 전환
 
 현재 저장되는 수동 플레이 값:
 

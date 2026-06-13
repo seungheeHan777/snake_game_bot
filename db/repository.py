@@ -231,12 +231,27 @@ def create_game_run(
             return cur.fetchone()[0]
 
 
-def get_top_player_runs(limit=10):
+def get_top_player_runs(limit=10, sort_by="score", victory_only=False):
     """Return top manual screen-play results."""
+    order_by = """
+        gr.score DESC,
+        gr.victory DESC,
+        gr.steps ASC,
+        gr.created_at DESC
+    """
+    if sort_by == "steps":
+        order_by = """
+            gr.victory DESC,
+            gr.steps ASC,
+            gr.score DESC,
+            gr.created_at DESC
+        """
+
+    victory_clause = "AND gr.victory = TRUE" if victory_only else ""
     with connect() as conn:
         with conn.cursor() as cur:
             cur.execute(
-                """
+                f"""
                 SELECT
                     p.display_name,
                     gr.score,
@@ -248,11 +263,8 @@ def get_top_player_runs(limit=10):
                 JOIN players p ON p.id = gr.player_id
                 WHERE gr.actor_type = 'player'
                   AND gr.run_type = 'screen'
-                ORDER BY
-                    gr.score DESC,
-                    gr.victory DESC,
-                    gr.steps ASC,
-                    gr.created_at DESC
+                  {victory_clause}
+                ORDER BY {order_by}
                 LIMIT %s
                 """,
                 (limit,),

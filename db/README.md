@@ -33,10 +33,10 @@ py -3 snake_game.py
 랭킹 조회:
 
 ```text
-db.repository.get_top_player_runs(limit=10)
+db.repository.get_top_player_runs(limit=10, sort_by="score", victory_only=False)
 ```
 
-조회 기준:
+기본 조회 기준:
 
 ```text
 actor_type = player
@@ -46,6 +46,12 @@ victory DESC
 steps ASC
 created_at DESC
 ```
+
+화면에서 바꿀 수 있는 기준:
+
+- `Score`: 점수 높은 순
+- `Steps`: 승리 기록 우선, steps 낮은 순
+- `Wins only`: victory=true 기록만 표시
 
 ## 수동 플레이 저장 계획
 

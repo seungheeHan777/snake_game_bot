@@ -171,6 +171,16 @@ def draw_button(screen, font, rect, label):
     screen.blit(label_text, label_rect)
 
 
+def draw_option_button(screen, font, rect, label, active=False):
+    """Draw a small option button."""
+    fill_color = GREEN if active else WHITE
+    pygame.draw.rect(screen, fill_color, rect)
+    pygame.draw.rect(screen, BLACK, rect, 2)
+    label_text = font.render(label, True, BLACK)
+    label_rect = label_text.get_rect(center=rect.center)
+    screen.blit(label_text, label_rect)
+
+
 def show_start_screen(screen, font):
     """Show start menu and return selected action."""
     start_rect = pygame.Rect(80, 150, 240, 55)
@@ -205,26 +215,53 @@ def show_ranking_screen(screen, font):
     back_rect = pygame.Rect(110, 330, 180, 45)
     small_font = pygame.font.SysFont(None, 24)
     header_font = pygame.font.SysFont(None, 22)
-    rankings, message = load_rankings()
-    table_rect = pygame.Rect(20, 85, 360, 225)
+    option_font = pygame.font.SysFont(None, 20)
+    score_rect = pygame.Rect(20, 64, 80, 24)
+    steps_rect = pygame.Rect(110, 64, 80, 24)
+    wins_rect = pygame.Rect(200, 64, 95, 24)
+    table_rect = pygame.Rect(20, 98, 360, 210)
     columns = [
         ("Rank", 26),
         ("Name", 82),
         ("Score", 218),
         ("Steps", 292),
     ]
+    sort_by = "score"
+    victory_only = False
+    rankings, message = load_rankings(sort_by, victory_only)
 
     while True:
         screen.fill(WHITE)
         title_text = font.render("RANKING", True, BLACK)
         screen.blit(title_text, (70, 30))
+        draw_option_button(
+            screen,
+            option_font,
+            score_rect,
+            "Score",
+            active=sort_by == "score",
+        )
+        draw_option_button(
+            screen,
+            option_font,
+            steps_rect,
+            "Steps",
+            active=sort_by == "steps",
+        )
+        draw_option_button(
+            screen,
+            option_font,
+            wins_rect,
+            "Wins only" if victory_only else "All runs",
+            active=victory_only,
+        )
 
         if message:
             message_text = small_font.render(message, True, BLACK)
-            screen.blit(message_text, (45, 110))
+            screen.blit(message_text, (45, 130))
         elif not rankings:
             empty_text = small_font.render("No saved scores", True, BLACK)
-            screen.blit(empty_text, (95, 130))
+            screen.blit(empty_text, (95, 150))
         else:
             draw_ranking_table(screen, header_font, small_font, table_rect, columns, rankings)
 
@@ -238,16 +275,34 @@ def show_ranking_screen(screen, font):
                 pygame.K_RETURN,
             ):
                 return "back"
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+                sort_by = "score"
+                rankings, message = load_rankings(sort_by, victory_only)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_t:
+                sort_by = "steps"
+                rankings, message = load_rankings(sort_by, victory_only)
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
+                victory_only = not victory_only
+                rankings, message = load_rankings(sort_by, victory_only)
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if back_rect.collidepoint(event.pos):
                     return "back"
+                if score_rect.collidepoint(event.pos):
+                    sort_by = "score"
+                    rankings, message = load_rankings(sort_by, victory_only)
+                elif steps_rect.collidepoint(event.pos):
+                    sort_by = "steps"
+                    rankings, message = load_rankings(sort_by, victory_only)
+                elif wins_rect.collidepoint(event.pos):
+                    victory_only = not victory_only
+                    rankings, message = load_rankings(sort_by, victory_only)
 
         pygame.display.flip()
 
 
 def draw_ranking_table(screen, header_font, row_font, table_rect, columns, rankings):
     """Draw ranking data in fixed columns."""
-    row_height = 22
+    row_height = 18
     header_height = 26
     pygame.draw.rect(screen, BLACK, table_rect, 2)
 
@@ -294,12 +349,16 @@ def draw_ranking_table(screen, header_font, row_font, table_rect, columns, ranki
             screen.blit(value_text, (x, y + 4))
 
 
-def load_rankings():
+def load_rankings(sort_by="score", victory_only=False):
     """Load top player runs for the ranking screen."""
     try:
         from db.repository import get_top_player_runs
 
-        return get_top_player_runs(limit=10), ""
+        return get_top_player_runs(
+            limit=10,
+            sort_by=sort_by,
+            victory_only=victory_only,
+        ), ""
     except Exception:
         return [], "Ranking load failed"
 
