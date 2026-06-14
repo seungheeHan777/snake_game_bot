@@ -219,6 +219,7 @@ def show_ranking_screen(screen, font):
     score_rect = pygame.Rect(20, 64, 80, 24)
     steps_rect = pygame.Rect(110, 64, 80, 24)
     wins_rect = pygame.Rect(200, 64, 95, 24)
+    mode_rect = pygame.Rect(305, 64, 75, 24)
     table_rect = pygame.Rect(20, 98, 360, 210)
     columns = [
         ("Rank", 26),
@@ -228,7 +229,8 @@ def show_ranking_screen(screen, font):
     ]
     sort_by = "score"
     victory_only = False
-    rankings, message = load_rankings(sort_by, victory_only)
+    ranking_mode = "best"
+    rankings, message = load_rankings(sort_by, victory_only, ranking_mode)
 
     while True:
         screen.fill(WHITE)
@@ -255,6 +257,13 @@ def show_ranking_screen(screen, font):
             "Wins only" if victory_only else "All runs",
             active=victory_only,
         )
+        draw_option_button(
+            screen,
+            option_font,
+            mode_rect,
+            "Best" if ranking_mode == "best" else "Runs",
+            active=ranking_mode == "best",
+        )
 
         if message:
             message_text = small_font.render(message, True, BLACK)
@@ -277,25 +286,63 @@ def show_ranking_screen(screen, font):
                 return "back"
             if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
                 sort_by = "score"
-                rankings, message = load_rankings(sort_by, victory_only)
+                rankings, message = load_rankings(
+                    sort_by,
+                    victory_only,
+                    ranking_mode,
+                )
             if event.type == pygame.KEYDOWN and event.key == pygame.K_t:
                 sort_by = "steps"
-                rankings, message = load_rankings(sort_by, victory_only)
+                rankings, message = load_rankings(
+                    sort_by,
+                    victory_only,
+                    ranking_mode,
+                )
             if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
                 victory_only = not victory_only
-                rankings, message = load_rankings(sort_by, victory_only)
+                rankings, message = load_rankings(
+                    sort_by,
+                    victory_only,
+                    ranking_mode,
+                )
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_b:
+                ranking_mode = "runs" if ranking_mode == "best" else "best"
+                rankings, message = load_rankings(
+                    sort_by,
+                    victory_only,
+                    ranking_mode,
+                )
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if back_rect.collidepoint(event.pos):
                     return "back"
                 if score_rect.collidepoint(event.pos):
                     sort_by = "score"
-                    rankings, message = load_rankings(sort_by, victory_only)
+                    rankings, message = load_rankings(
+                        sort_by,
+                        victory_only,
+                        ranking_mode,
+                    )
                 elif steps_rect.collidepoint(event.pos):
                     sort_by = "steps"
-                    rankings, message = load_rankings(sort_by, victory_only)
+                    rankings, message = load_rankings(
+                        sort_by,
+                        victory_only,
+                        ranking_mode,
+                    )
                 elif wins_rect.collidepoint(event.pos):
                     victory_only = not victory_only
-                    rankings, message = load_rankings(sort_by, victory_only)
+                    rankings, message = load_rankings(
+                        sort_by,
+                        victory_only,
+                        ranking_mode,
+                    )
+                elif mode_rect.collidepoint(event.pos):
+                    ranking_mode = "runs" if ranking_mode == "best" else "best"
+                    rankings, message = load_rankings(
+                        sort_by,
+                        victory_only,
+                        ranking_mode,
+                    )
 
         pygame.display.flip()
 
@@ -349,12 +396,18 @@ def draw_ranking_table(screen, header_font, row_font, table_rect, columns, ranki
             screen.blit(value_text, (x, y + 4))
 
 
-def load_rankings(sort_by="score", victory_only=False):
+def load_rankings(sort_by="score", victory_only=False, ranking_mode="best"):
     """Load top player runs for the ranking screen."""
     try:
-        from db.repository import get_top_player_runs
+        from db.repository import get_player_best_runs, get_top_player_runs
 
-        return get_top_player_runs(
+        if ranking_mode == "runs":
+            return get_top_player_runs(
+                limit=10,
+                sort_by=sort_by,
+                victory_only=victory_only,
+            ), ""
+        return get_player_best_runs(
             limit=10,
             sort_by=sort_by,
             victory_only=victory_only,

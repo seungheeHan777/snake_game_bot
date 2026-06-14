@@ -284,6 +284,79 @@ def get_top_player_runs(limit=10, sort_by="score", victory_only=False):
     ]
 
 
+def get_player_best_runs(limit=10, sort_by="score", victory_only=False):
+    """Return each player's best manual screen-play result."""
+    order_by = """
+        score DESC,
+        victory DESC,
+        steps ASC,
+        created_at DESC
+    """
+    if sort_by == "steps":
+        order_by = """
+            victory DESC,
+            steps ASC,
+            score DESC,
+            created_at DESC
+        """
+
+    victory_clause = "AND gr.victory = TRUE" if victory_only else ""
+    with connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"""
+                WITH ranked_runs AS (
+                    SELECT
+                        p.id AS player_id,
+                        p.display_name,
+                        gr.score,
+                        gr.steps,
+                        gr.victory,
+                        gr.final_reason,
+                        gr.created_at,
+                        ROW_NUMBER() OVER (
+                            PARTITION BY p.id
+                            ORDER BY
+                                gr.score DESC,
+                                gr.victory DESC,
+                                gr.steps ASC,
+                                gr.created_at DESC
+                        ) AS player_rank
+                    FROM game_runs gr
+                    JOIN players p ON p.id = gr.player_id
+                    WHERE gr.actor_type = 'player'
+                      AND gr.run_type = 'screen'
+                      {victory_clause}
+                )
+                SELECT
+                    display_name,
+                    score,
+                    steps,
+                    victory,
+                    final_reason,
+                    created_at
+                FROM ranked_runs
+                WHERE player_rank = 1
+                ORDER BY {order_by}
+                LIMIT %s
+                """,
+                (limit,),
+            )
+            rows = cur.fetchall()
+
+    return [
+        {
+            "display_name": row[0],
+            "score": row[1],
+            "steps": row[2],
+            "victory": row[3],
+            "final_reason": row[4],
+            "created_at": row[5],
+        }
+        for row in rows
+    ]
+
+
 def psycopg_json(value):
     """Convert a Python value to JSON text for jsonb parameters."""
     import json

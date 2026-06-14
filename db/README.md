@@ -34,6 +34,7 @@ py -3 snake_game.py
 
 ```text
 db.repository.get_top_player_runs(limit=10, sort_by="score", victory_only=False)
+db.repository.get_player_best_runs(limit=10, sort_by="score", victory_only=False)
 ```
 
 기본 조회 기준:
@@ -52,6 +53,8 @@ created_at DESC
 - `Score`: 점수 높은 순
 - `Steps`: 승리 기록 우선, steps 낮은 순
 - `Wins only`: victory=true 기록만 표시
+- `Best`: 플레이어별 최고 기록만 표시
+- `Runs`: 저장된 게임 기록 전체 기준으로 표시
 
 ## 수동 플레이 저장 계획
 
