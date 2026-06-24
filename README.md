@@ -103,6 +103,12 @@ stable_bot/         # 안정 완주 봇
 ga_bot/             # GA 실험 코드와 학습 산출물
 ```
 
+세부 TODO:
+
+- 루트 `TODO.md`: 현재 우선순위와 큰 작업 상태
+- `stable_bot/TODO.md`: 안정 완주 봇 세부 구현/평가 상태
+- `ga_bot/TODO.md`: GA 실험 코드 세부 상태
+
 ## DB 구조
 
 - `players`: 사람 플레이어 정보

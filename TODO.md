@@ -4,7 +4,7 @@
 
 - [x] 랭킹 화면 UI 세부 디자인 개선
 - [ ] 수동 플레이 결과 저장/랭킹 흐름 최종 화면 점검
-- [ ] stable bot 관련 TODO를 현재 구현 상태에 맞게 정리
+- [x] stable bot 관련 TODO를 현재 구현 상태에 맞게 정리
 - [ ] GA bot 관련 TODO를 실험/보관 상태에 맞게 정리
 
 ## 수동 플레이 결과 저장 UI
@@ -59,7 +59,7 @@
 - [x] `success=100/100`
 - [x] `avg_score=400.00`
 - [x] 화면 플레이 확인
-- [ ] `stable_bot/TODO.md` 세부 항목 최신화
+- [x] `stable_bot/TODO.md` 세부 항목 최신화
 
 ## 수동 게임 구조 정리
 
