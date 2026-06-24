@@ -42,6 +42,7 @@ py -3 -m stable_bot.evaluate --runs 30 --mode stable --save-db
 - 랭킹 `Score` / `Steps` 정렬
 - 랭킹 `Wins only` 필터
 - 랭킹 `Best` / `Runs` 보기 모드
+- 랭킹 표 간격, 버튼 위치, 빈 기록 화면 정리
 
 ## 수동 플레이 저장 값
 

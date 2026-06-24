@@ -212,20 +212,20 @@ def show_start_screen(screen, font):
 
 def show_ranking_screen(screen, font):
     """Show saved player rankings."""
-    back_rect = pygame.Rect(110, 330, 180, 45)
+    back_rect = pygame.Rect(120, 335, 160, 42)
     small_font = pygame.font.SysFont(None, 24)
     header_font = pygame.font.SysFont(None, 22)
     option_font = pygame.font.SysFont(None, 20)
-    score_rect = pygame.Rect(20, 64, 80, 24)
-    steps_rect = pygame.Rect(110, 64, 80, 24)
-    wins_rect = pygame.Rect(200, 64, 95, 24)
-    mode_rect = pygame.Rect(305, 64, 75, 24)
-    table_rect = pygame.Rect(20, 98, 360, 210)
+    score_rect = pygame.Rect(20, 60, 80, 26)
+    steps_rect = pygame.Rect(110, 60, 80, 26)
+    wins_rect = pygame.Rect(200, 60, 95, 26)
+    mode_rect = pygame.Rect(305, 60, 75, 26)
+    table_rect = pygame.Rect(20, 98, 360, 220)
     columns = [
-        ("Rank", 26),
-        ("Name", 82),
-        ("Score", 218),
-        ("Steps", 292),
+        ("Rank", 28),
+        ("Name", 78),
+        ("Score", 235),
+        ("Steps", 304),
     ]
     sort_by = "score"
     victory_only = False
@@ -235,7 +235,7 @@ def show_ranking_screen(screen, font):
     while True:
         screen.fill(WHITE)
         title_text = font.render("RANKING", True, BLACK)
-        screen.blit(title_text, (70, 30))
+        screen.blit(title_text, title_text.get_rect(center=(BOARD_WIDTH // 2, 28)))
         draw_option_button(
             screen,
             option_font,
@@ -266,11 +266,9 @@ def show_ranking_screen(screen, font):
         )
 
         if message:
-            message_text = small_font.render(message, True, BLACK)
-            screen.blit(message_text, (45, 130))
+            draw_ranking_empty_state(screen, small_font, table_rect, message)
         elif not rankings:
-            empty_text = small_font.render("No saved scores", True, BLACK)
-            screen.blit(empty_text, (95, 150))
+            draw_ranking_empty_state(screen, small_font, table_rect, "No saved scores")
         else:
             draw_ranking_table(screen, header_font, small_font, table_rect, columns, rankings)
 
@@ -377,6 +375,12 @@ def draw_ranking_table(screen, header_font, row_font, table_rect, columns, ranki
 
     for index, row in enumerate(rankings[:10], start=1):
         y = header_bottom + (index - 1) * row_height
+        if index % 2 == 0:
+            pygame.draw.rect(
+                screen,
+                (238, 238, 238),
+                pygame.Rect(table_rect.x + 1, y + 1, table_rect.width - 2, row_height - 1),
+            )
         pygame.draw.line(
             screen,
             BLACK,
@@ -394,6 +398,14 @@ def draw_ranking_table(screen, header_font, row_font, table_rect, columns, ranki
         for value, (_, x) in zip(values, columns):
             value_text = row_font.render(value, True, BLACK)
             screen.blit(value_text, (x, y + 4))
+
+
+def draw_ranking_empty_state(screen, font, table_rect, message):
+    """Draw an empty or error state inside the ranking table area."""
+    pygame.draw.rect(screen, BLACK, table_rect, 2)
+    message_text = font.render(message, True, BLACK)
+    message_rect = message_text.get_rect(center=table_rect.center)
+    screen.blit(message_text, message_rect)
 
 
 def load_rankings(sort_by="score", victory_only=False, ranking_mode="best"):
