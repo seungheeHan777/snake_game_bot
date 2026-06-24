@@ -107,7 +107,7 @@ ga_bot/             # GA 실험 코드와 학습 산출물
 
 - 루트 `TODO.md`: 현재 우선순위와 큰 작업 상태
 - `stable_bot/TODO.md`: 안정 완주 봇 세부 구현/평가 상태
-- `ga_bot/TODO.md`: GA 실험 코드 세부 상태
+- `ga_bot/TODO.md`: GA 실험/보관 상태와 재개 조건
 
 ## DB 구조
 
